@@ -23,7 +23,7 @@ const User = sequelize.define('User', {
 
 // eslint-disable-next-line
 User.prototype.toJSON = function () {
-  const values = Object.assign({}, this.get());
+  const values = { ...this.get() };
 
   delete values.password;
 

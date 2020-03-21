@@ -3,6 +3,13 @@ const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
 
 const UserController = () => {
+
+  const test = (req, res) => {
+    return res.status(200).json({
+      msg: "successful ping"
+    })
+  }
+
   const register = async (req, res) => {
     const { body } = req;
 
@@ -85,6 +92,7 @@ const UserController = () => {
     login,
     validate,
     getAll,
+    test
   };
 };
 

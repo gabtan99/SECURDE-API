@@ -7,7 +7,6 @@ const helmet = require("helmet");
 const http = require("http");
 const mapRoutes = require("express-routes-mapper");
 const cors = require("cors");
-
 /**
  * server configuration
  */
@@ -40,14 +39,12 @@ app.use(
   })
 );
 
-// parsing the request bodys
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // secure your private routes with jwt authentication middleware
 app.all("/private/*", (req, res, next) => auth(req, res, next));
 
-// fill routes for express application
 app.use("/public", mappedOpenRoutes);
 app.use("/private", mappedAuthRoutes);
 

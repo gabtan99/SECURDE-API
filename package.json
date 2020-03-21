@@ -13,7 +13,7 @@
   },
   "scripts": {
     "prestart": "npm run drop-sqlite-db || true",
-    "start": "npm run nodemon",
+    "start": "cross-env NODE_ENV=production node ./api/api.js",
     "poststart": "npm run create-sqlite-db",
     "dev": "cross-env NODE_ENV=development node ./api/api.js",
     "nodemon": "nodemon --exec npm run dev",

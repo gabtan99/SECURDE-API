@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 const bcryptService = require('../services/bcrypt.service');
-
-const sequelize = require('../../config/database');
+const Database = require('../../config/database');
 
 const hooks = {
   beforeCreate(user) {
@@ -9,9 +8,15 @@ const hooks = {
   },
 };
 
-const tableName = 'users';
+const tableName = 'user';
 
-const User = sequelize.define('User', {
+const User = Database.define('User', {
+  id_number: {
+    type: Sequelize.BIGINT,
+    unique: true,
+    allowNull: false,
+    required: true,
+  },
   email: {
     type: Sequelize.STRING,
     unique: true,

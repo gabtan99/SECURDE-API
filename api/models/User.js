@@ -56,7 +56,6 @@ const User = Database.define(
   },
 );
 
-// eslint-disable-next-line
 User.prototype.toJSON = function() {
   const values = { ...this.get() };
 

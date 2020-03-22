@@ -3,32 +3,31 @@ const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
 
 const UserController = () => {
-
   const test = (req, res) => {
     return res.status(200).json({
-      msg: "successful ping"
-    })
-  }
+      msg: 'successful ping',
+    });
+  };
 
   const register = async (req, res) => {
     const { body } = req;
 
-    if (body.password === body.password2) {
-      try {
-        const user = await User.create({
-          email: body.email,
-          password: body.password,
-        });
-        const token = authService().issue({ id: user.id });
+    try {
+      const user = await User.create({
+        id_number: body.id_number,
+        name: body.name,
+        username: body.username,
+        password: body.password,
+        email_address: body.email_address,
+        access: body.access,
+      });
+      const token = authService().issue({ id: user.id_number });
 
-        return res.status(200).json({ token, user });
-      } catch (err) {
-        console.log(err);
-        return res.status(500).json({ msg: 'Internal server error' });
-      }
+      return res.status(200).json({ token, user });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: 'Internal server error' });
     }
-
-    return res.status(400).json({ msg: 'Bad Request: Passwords don\'t match' });
   };
 
   const login = async (req, res) => {
@@ -36,12 +35,11 @@ const UserController = () => {
 
     if (email && password) {
       try {
-        const user = await User
-          .findOne({
-            where: {
-              email,
-            },
-          });
+        const user = await User.findOne({
+          where: {
+            email,
+          },
+        });
 
         if (!user) {
           return res.status(400).json({ msg: 'Bad Request: User not found' });
@@ -66,7 +64,7 @@ const UserController = () => {
   const validate = (req, res) => {
     const { token } = req.body;
 
-    authService().verify(token, (err) => {
+    authService().verify(token, err => {
       if (err) {
         return res.status(401).json({ isvalid: false, err: 'Invalid Token!' });
       }
@@ -86,13 +84,12 @@ const UserController = () => {
     }
   };
 
-
   return {
     register,
     login,
     validate,
     getAll,
-    test
+    test,
   };
 };
 

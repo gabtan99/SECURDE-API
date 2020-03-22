@@ -1,7 +1,10 @@
 const database = require('../../config/database');
 
 const dbService = (environment, migrate) => {
-  const authenticateDB = () => database.authenticate();
+  const authenticateDB = () => { 
+    console.log('Attempting to connect...')
+    return database.authenticate()
+  };
 
   const dropDB = () => database.drop();
 
@@ -22,7 +25,8 @@ const dbService = (environment, migrate) => {
 
   const startMigrateTrue = async () => {
     try {
-      await syncDB();
+      
+      // await syncDB();
       successfulDBStart();
     } catch (err) {
       errorDBStart(err);
@@ -31,8 +35,8 @@ const dbService = (environment, migrate) => {
 
   const startMigrateFalse = async () => {
     try {
-      await dropDB();
-      await syncDB();
+      // await dropDB();
+      // await syncDB();
       successfulDBStart();
     } catch (err) {
       errorDBStart(err);

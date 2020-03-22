@@ -48,7 +48,6 @@ switch (process.env.NODE_ENV) {
           min: 0,
           idle: 10000,
         },
-        storage: path.join(process.cwd(), 'db', 'database.sqlite'),
       },
     );
 }

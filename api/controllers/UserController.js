@@ -20,6 +20,11 @@ const UserController = () => {
       return res.status(200).json({ token, user });
     } catch (err) {
       console.log(err);
+
+      if (err.name === 'SequelizeUniqueConstraintError') {
+        return res.status(409).json({ msg: 'ID Number already exists' });
+      }
+
       return res.status(500).json({ msg: 'Internal server error' });
     }
   };

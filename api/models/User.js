@@ -10,24 +10,54 @@ const hooks = {
 
 const tableName = 'user';
 
-const User = Database.define('User', {
-  id_number: {
-    type: Sequelize.BIGINT,
-    unique: true,
-    allowNull: false,
-    required: true,
+const User = Database.define(
+  tableName,
+  {
+    id_number: {
+      type: Sequelize.BIGINT,
+      primaryKey: true,
+      unique: true,
+      allowNull: false,
+      required: true,
+      field: 'id_number',
+    },
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'name',
+    },
+    username: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'username',
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'password',
+    },
+    email_address: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'email_address',
+    },
+    access: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'access',
+    },
   },
-  email: {
-    type: Sequelize.STRING,
-    unique: true,
+  {
+    hooks,
+    tableName,
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   },
-  password: {
-    type: Sequelize.STRING,
-  },
-}, { hooks, tableName });
+);
 
 // eslint-disable-next-line
-User.prototype.toJSON = function () {
+User.prototype.toJSON = function() {
   const values = { ...this.get() };
 
   delete values.password;

@@ -1,9 +1,8 @@
 const publicRoutes = {
-  'POST /user': 'UserController.register',
-  'POST /register': 'UserController.register', // alias for POST /user
+  'POST /register': 'UserController.register',
   'POST /login': 'UserController.login',
   'POST /validate': 'UserController.validate',
-  'GET /apitest': 'UserController.test',
+  'GET /ping': 'CommonController.ping',
 };
 
 module.exports = publicRoutes;

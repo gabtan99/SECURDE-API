@@ -3,23 +3,17 @@ const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
 
 const UserController = () => {
-  const test = (req, res) => {
-    return res.status(200).json({
-      msg: 'successful ping',
-    });
-  };
-
   const register = async (req, res) => {
-    const { body } = req;
+    const { id_number, name, username, password, email_address, access } = req.body;
 
     try {
       const user = await User.create({
-        id_number: body.id_number,
-        name: body.name,
-        username: body.username,
-        password: body.password,
-        email_address: body.email_address,
-        access: body.access,
+        id_number,
+        name,
+        username,
+        password,
+        email_address,
+        access,
       });
       const token = authService().issue({ id: user.id_number });
 
@@ -31,22 +25,22 @@ const UserController = () => {
   };
 
   const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (email && password) {
+    if (username && password) {
       try {
         const user = await User.findOne({
           where: {
-            email,
+            username,
           },
         });
 
         if (!user) {
-          return res.status(400).json({ msg: 'Bad Request: User not found' });
+          return res.status(400).json({ msg: 'Error: User not found' });
         }
 
         if (bcryptService().comparePassword(password, user.password)) {
-          const token = authService().issue({ id: user.id });
+          const token = authService().issue({ id: user.id_number });
 
           return res.status(200).json({ token, user });
         }
@@ -89,7 +83,6 @@ const UserController = () => {
     login,
     validate,
     getAll,
-    test,
   };
 };
 

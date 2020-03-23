@@ -12,12 +12,14 @@
     "url": "https://github.com/aichbauer/express-rest-api-boilerplate/issues"
   },
   "scripts": {
-    "start": "npm run production",
+    "start": "npm run documentation && npm run production",
     "dev": "NODE_ENV=development node -r dotenv/config ./api/api.js",
+    "dev-windows": "SET NODE_ENV=production&& nodemon -r dotenv/config ./api/api.js",
     "nodemon": "nodemon --exec npm run dev",
     "lint": "eslint ./api/. ./config/. ./test/.",
     "pretest": "npm run lint",
-    "production": "NODE_ENV=production node ./api/api.js"
+    "production": "NODE_ENV=production node ./api/api.js",
+    "documentation": "apidoc -i api/ -o documentation/"
   },
   "jest": {
     "globals": {
@@ -42,6 +44,7 @@
     "sqlite3": "^4.0.0"
   },
   "devDependencies": {
+    "apidoc": "^0.20.1",
     "cross-env": "^5.1.4",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",

@@ -27,6 +27,8 @@ app.use(
     ieNoOpen: false,
   }),
 );
+
+app.use(express.static('documentation'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

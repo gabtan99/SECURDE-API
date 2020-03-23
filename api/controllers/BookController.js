@@ -1,4 +1,5 @@
 const Book = require('../models/Book');
+const { Op } = require('sequelize');
 
 const BOOKS_PER_PAGE = 10;
 
@@ -10,7 +11,9 @@ const BookController = () => {
 
     try {
       const results = await Book.findAndCountAll({
-        where: {},
+        where: {
+          title: { [Op.iLike]: `%%` },
+        },
         limit,
         offset,
       });
@@ -20,16 +23,12 @@ const BookController = () => {
         return res.status(200).json({ data: results.rows });
       }
 
-      if (results.rows.length === 0) {
-        return res.status(400).json({ msg: `Page ${page} does not exist` });
-      }
-
       const meta = {
         pagination: {
           offset,
           limit,
-          current_page: page || 1,
-          page_count: Math.floor(results.count / limit),
+          current_page: page,
+          page_count: Math.ceil(results.count / limit),
           total_count: results.count,
         },
       };
@@ -37,7 +36,7 @@ const BookController = () => {
       return res.status(200).json({ data: results.rows, meta });
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ msg: 'Internal server error' });
+      return res.status(500).json({ msg: err.name });
     }
   };
 

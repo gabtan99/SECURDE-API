@@ -3,6 +3,31 @@ const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
 
 const UserController = () => {
+  /**
+   * @api {get} /register Create new user account
+   * @apiName Register
+   * @apiGroup User
+   *
+   * @apiParam {Number} id_number Unique student ID number.
+   * @apiParam {String} name Full name of student.
+   * @apiParam {String} username Unique username.
+   * @apiParam {String} password user password.
+   * @apiParam {String} email_address Email address of the user
+   * @apiParam {String} access Access type of the user (STUDENT, TEACHER, etc..)
+   *
+   * @apiSuccess {String} token Authentication token.
+   * @apiSuccess {Object} user Complete user details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "token": "xxxx",
+   *       "user": "{}"
+   *     }
+   *
+   * @apiError {409} Existing id number.
+   */
+
   const register = async (req, res) => {
     const { id_number, name, username, password, email_address, access } = req.body;
 
@@ -20,7 +45,6 @@ const UserController = () => {
       return res.status(200).json({ token, user });
     } catch (err) {
       console.log(err);
-
       if (err.name === 'SequelizeUniqueConstraintError') {
         return res.status(409).json({ msg: 'ID Number already exists' });
       }

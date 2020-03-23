@@ -31,6 +31,7 @@
     ]
   },
   "dependencies": {
+    "apidoc": "^0.20.1",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.18.2",
     "core-js": "^2.6.9",
@@ -44,7 +45,6 @@
     "sqlite3": "^4.0.0"
   },
   "devDependencies": {
-    "apidoc": "^0.20.1",
     "cross-env": "^5.1.4",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",

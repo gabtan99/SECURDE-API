@@ -89,9 +89,32 @@ const BookController = () => {
     }
   };
 
+  const createBook = async (req, res) => {
+    const { title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
+
+    try {
+      const book = await Book.create({
+        title,
+        publisher,
+        year_of_publication,
+        isbn,
+        status,
+        authors,
+        reviews,
+      });
+
+      return res.status(200).json({ book });
+    } catch (err) {
+      console.log(err);
+
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
   return {
     getBooks,
     getBook,
+    createBook,
   };
 };
 

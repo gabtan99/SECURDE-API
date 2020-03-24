@@ -40,7 +40,7 @@ const UserController = () => {
         email_address,
         access,
       });
-      const token = authService().issue({ id: user.id_number });
+      const token = authService().issue({ id_number: user.id_number, access: user.access });
 
       return res.status(200).json({ token, user });
     } catch (err) {
@@ -100,7 +100,7 @@ const UserController = () => {
         }
 
         if (bcryptService().comparePassword(password, user.password)) {
-          const token = authService().issue({ id: user.id_number });
+          const token = authService().issue({ id_number: user.id_number, access: user.access });
 
           return res.status(200).json({ token, user });
         }

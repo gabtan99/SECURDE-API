@@ -18,11 +18,6 @@ const BookController = () => {
         offset,
       });
 
-      if (!page) {
-        // if no page indicated, return default of 10 without metadata
-        return res.status(200).json({ data: results.rows });
-      }
-
       const meta = {
         pagination: {
           offset,

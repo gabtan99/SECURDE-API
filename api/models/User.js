@@ -29,6 +29,7 @@ const User = Database.define(
     username: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
       field: 'username',
     },
     password: {
@@ -38,6 +39,7 @@ const User = Database.define(
     },
     email_address: {
       type: Sequelize.STRING,
+      unique: true,
       allowNull: false,
       field: 'email_address',
     },

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcryptService = require('../services/bcrypt.service');
+const authService = require('../services/auth.service');
 
 const UserController = () => {
   /**

@@ -55,6 +55,32 @@ const BookController = () => {
       return res.status(500).json({ msg: err.name });
     }
   };
+
+  /**
+   * @api {post} /public/books Post Books
+   * @apiName createBook
+   * @apiGroup Book
+   *
+   * @apiParam {Number} id Unique Book id.
+   * @apiParam {String} title Title of book.
+   * @apiParam {String} publisher Publisher of book.
+   * @apiParam {Number} year_of_publication Year of publication of book.
+   * @apiParam {Number} isbn 3-digit Call Number based on the Dewey Decimal System.
+   * @apiParam {String} status status of the book.
+   * @apiParam {String} authors authors of the book.
+   * @apiParam {String} reviews reviews of the book.
+   *
+   * @apiSuccess {Object} book Complete book details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "book": "{}"
+   *     }
+   *
+   * @apiError SequelizeUniqueConstraintError Existing id.
+   *
+   */
   const createBook = async (req, res) => {
     const { id, title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
 
@@ -115,32 +141,45 @@ const BookController = () => {
     }
   };
 
-  const createBook = async (req, res) => {
-    const { title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
+  /**
+   * @api {delete} /public/book/:id Delete Book with ID
+   * @apiName deleteBookbyID
+   * @apiGroup Book
+   *
+   * @apiParam {Number} id Book id.
+   *
+   * @apiSuccess {String} SUCCESS.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "msg": "SUCCESS"
+   *     }
+   */
+
+  const deleteBook = async (req, res) => {
+    const { id } = req.params;
 
     try {
-      const book = await Book.create({
-        title,
-        publisher,
-        year_of_publication,
-        isbn,
-        status,
-        authors,
-        reviews,
+      const book = await Book.destroy({
+        where: {
+          id: id,
+        },
       });
 
-      return res.status(200).json({ book });
+      return res.status(200).json({ msg: "SUCCESS" });
     } catch (err) {
       console.log(err);
-
-      return res.status(500).json({ msg: 'Internal server error' });
+      return res.status(500).json({ msg: err.name });
     }
   };
+
 
   return {
     getBooks,
     getBook,
     createBook,
+    deleteBook,
   };
 };
 

@@ -40,9 +40,37 @@ const BookController = () => {
       return res.status(500).json({ msg: 'Internal server error' });
     }
   };
+  const createBook = async (req, res) => {
+    const { id, title, publisher, year_of_publication, isbn, status, authors, reviews} = req.body;
+
+    try {
+      const book = await Book.create({
+        id, 
+        title, 
+        publisher, 
+        year_of_publication, 
+        isbn, 
+        status, 
+        authors, 
+        reviews
+      });
+      
+
+      return res.status(200).json({book});
+    } catch (err) {
+      console.log(err);
+
+      if (err.name === 'SequelizeUniqueConstraintError') {
+        return res.status(409).json({ msg: 'ID already exists' });
+      }
+
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
 
   return {
     getBooks,
+    createBook,
   };
 };
 

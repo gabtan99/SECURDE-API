@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
     tokenToVerify = req.body.token;
     delete req.query.token;
   } else {
-    return res.status(401).json({ msg: 'No Authorization was found' });
+    return res.status(401).json({ msg: 'No Authorization Token was found' });
   }
 
   return JWTService().verify(tokenToVerify, (err, thisToken) => {

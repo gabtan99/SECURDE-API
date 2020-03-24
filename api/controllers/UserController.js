@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
 
 const UserController = () => {
@@ -26,10 +25,19 @@ const UserController = () => {
    *     }
    *
    * @apiError SequelizeUniqueConstraintError Existing id number / username / email.
+   * @apiError Unauthorized You are not allowed to make this type of account.
    */
 
   const register = async (req, res) => {
     const { id_number, name, username, password, email_address, access } = req.body;
+
+    if (!(access === 'STUDENT' || access === 'TEACHER'))
+      return res.status(401).json({
+        error: {
+          name: 'Unauthorized',
+          msg: 'You are not allowed to make this type of account.',
+        },
+      });
 
     try {
       const user = await User.create({
@@ -40,7 +48,10 @@ const UserController = () => {
         email_address,
         access,
       });
-      const token = authService().issue({ id_number: user.id_number, access: user.access });
+      const token = authService().issue({
+        id_number: user.id_number,
+        access: user.access,
+      });
 
       return res.status(200).json({ token, user });
     } catch (err) {
@@ -100,7 +111,10 @@ const UserController = () => {
         }
 
         if (bcryptService().comparePassword(password, user.password)) {
-          const token = authService().issue({ id_number: user.id_number, access: user.access });
+          const token = authService().issue({
+            id_number: user.id_number,
+            access: user.access,
+          });
 
           return res.status(200).json({ token, user });
         }
@@ -118,18 +132,6 @@ const UserController = () => {
     });
   };
 
-  const validate = (req, res) => {
-    const { token } = req.body;
-
-    authService().verify(token, err => {
-      if (err) {
-        return res.status(401).json({ isvalid: false, err: 'Invalid Token!' });
-      }
-
-      return res.status(200).json({ isvalid: true });
-    });
-  };
-
   const getAll = async (req, res) => {
     try {
       const users = await User.findAll();
@@ -144,7 +146,6 @@ const UserController = () => {
   return {
     register,
     login,
-    validate,
     getAll,
   };
 };

@@ -4,7 +4,7 @@ const verifyPermission = (route, method, role) => {
   const target = `${method} ${route}`;
   const accessible = permissions[role];
 
-  const [found] = accessible.filter(item => item.startsWith(target));
+  const [found] = accessible.filter(item => target.startsWith(item));
 
   if (found) {
     return true;

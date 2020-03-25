@@ -133,9 +133,26 @@ const UserController = () => {
     });
   };
 
-  const getAll = async (req, res) => {
+  const getUsers = async (req, res) => {
     try {
       const users = await User.findAll();
+
+      return res.status(200).json({ users });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
+  const getUsersWithRole = async (req, res) => {
+    const { role } = req.params;
+
+    try {
+      const users = await User.findAll({
+        where: {
+          access: role.toUpperCase(),
+        },
+      });
 
       return res.status(200).json({ users });
     } catch (err) {
@@ -147,7 +164,8 @@ const UserController = () => {
   return {
     register,
     login,
-    getAll,
+    getUsers,
+    getUsersWithRole,
   };
 };
 

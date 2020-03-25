@@ -57,7 +57,7 @@ const BookController = () => {
   };
 
   /**
-   * @api {get} /public/books/:id Get Book with ID
+   * @api {get} /public/books/{id} Get Book with ID
    * @apiName getBookbyID
    * @apiGroup Book
    *
@@ -136,7 +136,7 @@ const BookController = () => {
   };
 
   /**
-   * @api {delete} /private/book/:id Delete Book with ID
+   * @api {delete} /private/book/{id} Delete Book with ID
    * @apiName deleteBook
    * @apiGroup Book
    *

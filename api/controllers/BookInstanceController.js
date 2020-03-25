@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 
 const BookInstanceController = () => {
   /**
-   * @api {post} /private/book/:book_id/instance Create Book Instance
+   * @api {post} /private/book/{book_id}/instance Create Book Instance
    * @apiName createBookInstance
    * @apiGroup Book Instance
    *
@@ -51,7 +51,7 @@ const BookInstanceController = () => {
   };
 
   /**
-   * @api {delete} /private/:book_id/instance/:id Delete Book Instance
+   * @api {delete} /private/{book_id}/instance/{id} Delete Book Instance
    * @apiName deleteBookInstanceByID
    * @apiGroup Book Instance
    *

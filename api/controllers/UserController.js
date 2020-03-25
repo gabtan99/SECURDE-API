@@ -134,7 +134,7 @@ const UserController = () => {
   };
 
   /**
-   * @api {get} /private/users/:role Get Users
+   * @api {get} /private/users/{role} Get Users
    * @apiName getUsers
    * @apiGroup User
    *

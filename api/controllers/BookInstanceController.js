@@ -2,18 +2,16 @@ const BookInstance = require('../models/BookInstance');
 const { Op } = require('sequelize');
 
 const BookInstanceController = () => {
-  
- /**
-   * @api {post} /public/book-instances Post BookInstances
+  /**
+   * @api {post} /private/book/:book_id/instance Create Book Instance
    * @apiName createBookInstance
    * @apiGroup BookInstance
    *
-   * @apiParam {Number} id Unique Book Instance id.
-   * @apiParam {Number} book_id Book ID of book instance.
+   * @apiParam {Number} book_id Book ID of book instance (URL parameter).
    * @apiParam {String} status Status of book instance.
    * @apiParam {String} language language of the book instance.
    *
-   * @apiSuccess {Object} book instance Complete book instance details.
+   * @apiSuccess {Object} Complete book instance details.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
@@ -21,60 +19,76 @@ const BookInstanceController = () => {
    *       "bookInstance": "{}"
    *     }
    *
-   * @apiError SequelizeUniqueConstraintError Existing id.
+   * @apiError BookNotFound Book is non-existent.
    *
    */
   const createBookInstance = async (req, res) => {
-    const {id, book_id, status, language} = req.body;
+    const { book_id } = req.params;
+    const { status, language } = req.body;
 
     try {
       const bookInstance = await BookInstance.create({
-        id, 
-        book_id, 
-        status, 
-        language
+        book_id,
+        status,
+        language,
       });
-      
 
-      return res.status(200).json({bookInstance});
+      return res.status(200).json({ bookInstance });
     } catch (err) {
       console.log(err);
 
-      if (err.name === 'SequelizeUniqueConstraintError') {
-        return res.status(409).json({ msg: 'ID already exists' });
+      const { name } = err;
+      if (name === 'SequelizeForeignKeyConstraintError') {
+        return res.status(500).json({
+          err: {
+            name: 'BookNotFound',
+            msg: 'Book is non-existent',
+          },
+        });
       }
-
       return res.status(500).json({ msg: 'Internal server error' });
     }
   };
 
-   /**
-   * @api {delete} /public/book/:id/instance Delete Book with ID
-   * @apiName deleteBookInstancebyID
+  /**
+   * @api {delete} /private/:book_id/instance/:id Delete Book Instance
+   * @apiName deleteBookInstanceByID
    * @apiGroup BookInstance
    *
+   * @apiParam {Number} book_id Book id.
    * @apiParam {Number} id Book instance id.
    *
-   * @apiSuccess {String} SUCCESS.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
    *       "msg": "SUCCESS"
    *     }
+   *
+   * @apiError ResourceNotFound Book instance not found.
+   *
    */
 
   const deleteBookInstance = async (req, res) => {
-    const { id } = req.params;
+    const { book_id, id } = req.params;
 
     try {
-      const bookInstance = await BookInstance.destroy({
+      const deleted = await BookInstance.destroy({
         where: {
-          id: id,
+          id,
+          book_id,
         },
       });
 
-      return res.status(200).json({ msg: "SUCCESS" });
+      if (!deleted)
+        return res.status(404).json({
+          err: {
+            name: 'ResourceNotFound',
+            msg: 'Book instance not found',
+          },
+        });
+
+      return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.name });

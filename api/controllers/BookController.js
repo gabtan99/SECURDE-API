@@ -90,7 +90,7 @@ const BookController = () => {
   };
 
   /**
-   * @api {post} /public/books Post Books
+   * @api {post} /private/book Create Book
    * @apiName createBook
    * @apiGroup Book
    *
@@ -110,7 +110,8 @@ const BookController = () => {
    *       "book": "{}"
    *     }
    *
-   * @apiError SequelizeUniqueConstraintError Existing id.
+   * @apiError ResourceNotFound Book not found.
+   *
    *
    */
   const createBook = async (req, res) => {
@@ -122,7 +123,7 @@ const BookController = () => {
         publisher,
         year_of_publication,
         isbn,
-        status,
+        status: status.toUpperCase(),
         authors,
         reviews,
       });
@@ -135,13 +136,12 @@ const BookController = () => {
   };
 
   /**
-   * @api {delete} /public/book/:id Delete Book with ID
-   * @apiName deleteBookbyID
+   * @api {delete} /private/book/:id Delete Book with ID
+   * @apiName deleteBook
    * @apiGroup Book
    *
    * @apiParam {Number} id Book id.
    *
-   * @apiSuccess {String} SUCCESS.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
@@ -154,11 +154,16 @@ const BookController = () => {
     const { id } = req.params;
 
     try {
-      await Book.destroy({
+      const deleted = await Book.destroy({
         where: {
           id: id,
         },
       });
+
+      if (!deleted)
+        return res.status(404).json({
+          err: { name: 'ResourceNotFound', msg: 'Book not found' },
+        });
 
       return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {

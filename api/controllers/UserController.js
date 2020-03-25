@@ -47,7 +47,7 @@ const UserController = () => {
         username,
         password,
         email_address,
-        access,
+        access: access.toUpperCase(),
       });
       const token = authService().issue({
         id_number: user.id_number,

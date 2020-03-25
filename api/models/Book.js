@@ -11,7 +11,6 @@ const Book = Database.define(
       primaryKey: true,
       unique: true,
       autoIncrement: true,
-      allowNull: false,
       field: 'id',
     },
     title: {

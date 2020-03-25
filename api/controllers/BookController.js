@@ -57,58 +57,6 @@ const BookController = () => {
   };
 
   /**
-   * @api {post} /public/books Post Books
-   * @apiName createBook
-   * @apiGroup Book
-   *
-   * @apiParam {Number} id Unique Book id.
-   * @apiParam {String} title Title of book.
-   * @apiParam {String} publisher Publisher of book.
-   * @apiParam {Number} year_of_publication Year of publication of book.
-   * @apiParam {Number} isbn 3-digit Call Number based on the Dewey Decimal System.
-   * @apiParam {String} status status of the book.
-   * @apiParam {String} authors authors of the book.
-   * @apiParam {String} reviews reviews of the book.
-   *
-   * @apiSuccess {Object} book Complete book details.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "book": "{}"
-   *     }
-   *
-   * @apiError SequelizeUniqueConstraintError Existing id.
-   *
-   */
-  const createBook = async (req, res) => {
-    const { id, title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
-
-    try {
-      const book = await Book.create({
-        id,
-        title,
-        publisher,
-        year_of_publication,
-        isbn,
-        status,
-        authors,
-        reviews,
-      });
-
-      return res.status(200).json({ book });
-    } catch (err) {
-      console.log(err);
-
-      if (err.name === 'SequelizeUniqueConstraintError') {
-        return res.status(409).json({ msg: 'ID already exists' });
-      }
-
-      return res.status(500).json({ msg: 'Internal server error' });
-    }
-  };
-
-  /**
    * @api {get} /public/books/:id Get Book with ID
    * @apiName getBookbyID
    * @apiGroup Book
@@ -142,6 +90,51 @@ const BookController = () => {
   };
 
   /**
+   * @api {post} /public/books Post Books
+   * @apiName createBook
+   * @apiGroup Book
+   *
+   * @apiParam {String} title Title of book.
+   * @apiParam {String} publisher Publisher of book.
+   * @apiParam {Number} year_of_publication Year of publication of book.
+   * @apiParam {Number} isbn 3-digit Call Number based on the Dewey Decimal System.
+   * @apiParam {String} status status of the book.
+   * @apiParam {String} authors authors of the book.
+   * @apiParam {String} reviews reviews of the book.
+   *
+   * @apiSuccess {Object} book Complete book details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "book": "{}"
+   *     }
+   *
+   * @apiError SequelizeUniqueConstraintError Existing id.
+   *
+   */
+  const createBook = async (req, res) => {
+    const { title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
+
+    try {
+      const book = await Book.create({
+        title,
+        publisher,
+        year_of_publication,
+        isbn,
+        status,
+        authors,
+        reviews,
+      });
+
+      return res.status(200).json({ book });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
+  /**
    * @api {delete} /public/book/:id Delete Book with ID
    * @apiName deleteBookbyID
    * @apiGroup Book
@@ -161,19 +154,18 @@ const BookController = () => {
     const { id } = req.params;
 
     try {
-      const book = await Book.destroy({
+      await Book.destroy({
         where: {
           id: id,
         },
       });
 
-      return res.status(200).json({ msg: "SUCCESS" });
+      return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.name });
     }
   };
-
 
   return {
     getBooks,

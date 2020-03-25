@@ -5,7 +5,7 @@ const BookInstanceController = () => {
   /**
    * @api {post} /private/book/:book_id/instance Create Book Instance
    * @apiName createBookInstance
-   * @apiGroup BookInstance
+   * @apiGroup Book Instance
    *
    * @apiParam {Number} book_id Book ID of book instance (URL parameter).
    * @apiParam {String} status Status of book instance.
@@ -53,7 +53,7 @@ const BookInstanceController = () => {
   /**
    * @api {delete} /private/:book_id/instance/:id Delete Book Instance
    * @apiName deleteBookInstanceByID
-   * @apiGroup BookInstance
+   * @apiGroup Book Instance
    *
    * @apiParam {Number} book_id Book id.
    * @apiParam {Number} id Book instance id.

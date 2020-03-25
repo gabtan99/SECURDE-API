@@ -119,23 +119,44 @@ const UserController = () => {
 
           return res.status(200).json({ token, user });
         }
+
+        return res.status(401).json({
+          error: {
+            name: 'Unauthorized',
+            msg: 'Username / Password is incorrect',
+          },
+        });
       } catch (err) {
         console.log(err);
         return res.status(500).json({ msg: 'Internal server error' });
       }
     }
-
-    return res.status(401).json({
-      error: {
-        name: 'Unauthorized',
-        msg: 'Username / Password is incorrect',
-      },
-    });
   };
 
+  /**
+   * @api {get} /private/users/:role Get Users
+   * @apiName getUsers
+   * @apiGroup User
+   *
+   * @apiParam {String} [role] Access type of user.
+   *
+   * @apiSuccess {Object} users Array of users.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "users": []
+   *     }
+   *
+   */
   const getUsers = async (req, res) => {
+    const { role } = req.params;
+    const conditions = role ? { access: role.toUpperCase() } : {};
+
     try {
-      const users = await User.findAll();
+      const users = await User.findAll({
+        where: conditions,
+      });
 
       return res.status(200).json({ users });
     } catch (err) {
@@ -144,17 +165,67 @@ const UserController = () => {
     }
   };
 
-  const getUsersWithRole = async (req, res) => {
-    const { role } = req.params;
+  /**
+   * @api {PATCH} /private/reset-password Change Password
+   * @apiName ResetPassword
+   * @apiGroup User
+   *
+   * @apiParam {String} old_password old password.
+   * @apiParam {String} new_password new password.
+   *
+   * @apiSuccess {String} token Authentication token.
+   * @apiSuccess {Object} user Complete user details.
+   * @apiSuccess {String} msg Success message.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "token": "xxxx",
+   *       "user": "{}",
+   *       "msg": "Password Changed"
+   *     }
+   *
+   * @apiError UserNotFound User not found.
+   * @apiError Unauthorized Old password is incorrect.
+   */
+
+  const resetPassword = async (req, res) => {
+    const { token, body } = req;
+    const { old_password, new_password } = body;
+    const { id_number } = token;
 
     try {
-      const users = await User.findAll({
+      const user = await User.findOne({
         where: {
-          access: role.toUpperCase(),
+          id_number,
         },
       });
 
-      return res.status(200).json({ users });
+      if (!user) {
+        return res.status(400).json({
+          error: { name: 'UserNotFound', msg: 'User not found' },
+        });
+      }
+
+      if (bcryptService().comparePassword(old_password, user.password)) {
+        user.password = new_password;
+        const password = bcryptService().password(user);
+        user.update({ password });
+
+        const token = authService().issue({
+          id_number: user.id_number,
+          access: user.access,
+        });
+
+        return res.status(200).json({ token, user, msg: 'Password Changed' });
+      }
+
+      return res.status(401).json({
+        error: {
+          name: 'Unauthorized',
+          msg: 'Old password is incorrect.',
+        },
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: 'Internal server error' });
@@ -165,7 +236,7 @@ const UserController = () => {
     register,
     login,
     getUsers,
-    getUsersWithRole,
+    resetPassword,
   };
 };
 

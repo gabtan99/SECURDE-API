@@ -1,6 +1,7 @@
 const privateRoutes = {
   'GET /users': 'UserController.getUsers',
   'GET /users/:role': 'UserController.getUsers',
+  'POST /register-manager': 'UserController.registerManager',
   'PATCH /reset-password': 'UserController.resetPassword',
   'POST /book': 'BookController.createBook',
   'DELETE /book/:id': 'BookController.deleteBook',

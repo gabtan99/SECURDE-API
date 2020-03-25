@@ -232,11 +232,65 @@ const UserController = () => {
     }
   };
 
+  /**
+   * @api {post} /private/register-manager Register Manager
+   * @apiName RegisterManager
+   * @apiGroup User
+   *
+   * @apiParam {Number} id_number Unique Manager ID number.
+   * @apiParam {String} name Full name of Manager.
+   * @apiParam {String} username Unique username.
+   * @apiParam {String} password user password.
+   * @apiParam {String} email_address Email address of the user
+   *
+   * @apiSuccess {Object} user Complete user details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "user": "{}"
+   *     }
+   *
+   * @apiError SequelizeUniqueConstraintError Existing id number / username / email.
+   */
+
+  const registerManager = async (req, res) => {
+    const { id_number, name, username, password, email_address } = req.body;
+
+    try {
+      const user = await User.create({
+        id_number,
+        name,
+        username,
+        password,
+        email_address,
+        access: 'MANAGER',
+      });
+
+      return res.status(200).json({ user });
+    } catch (err) {
+      const { name, parent } = err;
+      if (name === 'SequelizeUniqueConstraintError') {
+        if (parent.constraint === 'unique_username') {
+          return res.status(409).json({ error: { name, msg: 'Username already exists' } });
+        } else if (parent.constraint === 'unique_email') {
+          return res.status(409).json({
+            error: { name, msg: 'Email address already exists' },
+          });
+        }
+        return res.status(409).json({ error: { name, msg: 'ID Number already exists' } });
+      }
+
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
   return {
     register,
     login,
     getUsers,
     resetPassword,
+    registerManager,
   };
 };
 

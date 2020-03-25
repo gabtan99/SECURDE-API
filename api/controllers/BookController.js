@@ -89,6 +89,31 @@ const BookController = () => {
     }
   };
 
+  /**
+   * @api {post} /private/book Create Book
+   * @apiName createBook
+   * @apiGroup Book
+   *
+   * @apiParam {String} title Title of book.
+   * @apiParam {String} publisher Publisher of book.
+   * @apiParam {Number} year_of_publication Year of publication of book.
+   * @apiParam {Number} isbn 3-digit Call Number based on the Dewey Decimal System.
+   * @apiParam {String} status status of the book.
+   * @apiParam {String} authors authors of the book.
+   * @apiParam {String} reviews reviews of the book.
+   *
+   * @apiSuccess {Object} book Complete book details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "book": "{}"
+   *     }
+   *
+   * @apiError ResourceNotFound Book not found.
+   *
+   *
+   */
   const createBook = async (req, res) => {
     const { title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
 
@@ -98,7 +123,7 @@ const BookController = () => {
         publisher,
         year_of_publication,
         isbn,
-        status,
+        status: status.toUpperCase(),
         authors,
         reviews,
       });
@@ -106,8 +131,44 @@ const BookController = () => {
       return res.status(200).json({ book });
     } catch (err) {
       console.log(err);
-
       return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
+  /**
+   * @api {delete} /private/book/:id Delete Book with ID
+   * @apiName deleteBook
+   * @apiGroup Book
+   *
+   * @apiParam {Number} id Book id.
+   *
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "msg": "SUCCESS"
+   *     }
+   */
+
+  const deleteBook = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const deleted = await Book.destroy({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!deleted)
+        return res.status(404).json({
+          err: { name: 'ResourceNotFound', msg: 'Book not found' },
+        });
+
+      return res.status(200).json({ msg: 'SUCCESS' });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: err.name });
     }
   };
 
@@ -115,6 +176,7 @@ const BookController = () => {
     getBooks,
     getBook,
     createBook,
+    deleteBook,
   };
 };
 

@@ -11,7 +11,6 @@ const BookInstance = Database.define(
       primaryKey: true,
       unique: true,
       autoIncrement: true,
-      allowNull: false,
       field: 'id',
     },
     book_id: {

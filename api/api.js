@@ -8,6 +8,7 @@ const cors = require('cors');
 const config = require('../config');
 const dbService = require('./services/db.service');
 const auth = require('./policies/auth.policy');
+const role = require('./policies/role.policy');
 
 const app = express();
 const server = http.Server(app);
@@ -32,7 +33,11 @@ app.use(express.static('documentation'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.all('/private/*', (req, res, next) => auth(req, res, next));
+app.all(
+  '/private/*',
+  (req, res, next) => auth(req, res, next),
+  (req, res, next) => role(req, res, next),
+);
 
 app.use('/public', mappedOpenRoutes);
 app.use('/private', mappedAuthRoutes);

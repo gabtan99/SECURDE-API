@@ -151,7 +151,7 @@ const BookController = () => {
   };
 
   /**
-   * @api {patch} /private/book Update Book
+   * @api {patch} /private/book/{id} Update Book
    * @apiName updateBook
    * @apiGroup Book
    *

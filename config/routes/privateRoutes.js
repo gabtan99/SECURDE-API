@@ -6,6 +6,7 @@ const privateRoutes = {
   'PATCH /reset-password': 'UserController.resetPassword',
 
   'POST /book': 'BookController.createBook',
+  'PATCH /book/:id': 'BookController.updateBook',
   'DELETE /book/:id': 'BookController.deleteBook',
 
   'POST /book/:book_id/instance': 'BookInstanceController.createBookInstance',

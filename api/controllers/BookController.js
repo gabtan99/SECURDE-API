@@ -151,7 +151,7 @@ const BookController = () => {
   };
 
   /**
-   * @api {patch} /private/book Update a Book
+   * @api {patch} /private/book Update Book
    * @apiName updateBook
    * @apiGroup Book
    *
@@ -167,7 +167,8 @@ const BookController = () => {
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "book": "{}"
+   *       "book": "{}",
+   *       "msg": "Book Updated"
    *     }
    *
    * @apiError ResourceNotFound Book not found.
@@ -175,19 +176,28 @@ const BookController = () => {
    *
    */
   const updateBook = async (req, res) => {
-    const { title, publisher, year_of_publication, isbn, status, authors } = req.body;
+    const { id } = req.params;
+    const { title, publisher, year_of_publication, isbn, authors } = req.body;
 
     try {
-      const book = await Book.create({
-        title,
-        publisher,
-        year_of_publication,
-        isbn,
-        status: status.toUpperCase(),
-        authors,
-      });
+      const book = await Book.update(
+        {
+          title,
+          publisher,
+          year_of_publication,
+          isbn,
+          authors,
+        },
+        { where: { id } },
+      );
 
-      return res.status(200).json({ book });
+      if (!book[0]) {
+        return res.status(404).json({
+          err: { name: 'ResourceNotFound', msg: 'Book not found' },
+        });
+      }
+
+      return res.status(200).json({ msg: 'Book Updated' });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: 'Internal server error' });
@@ -235,6 +245,7 @@ const BookController = () => {
     getBooks,
     getBook,
     createBook,
+    updateBook,
     deleteBook,
   };
 };

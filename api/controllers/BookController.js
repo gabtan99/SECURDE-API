@@ -207,7 +207,7 @@ const BookController = () => {
   };
 
   /**
-   * @api {delete} /private/book/{id} Delete Book with ID
+   * @api {delete} /private/book/{id} Delete Book
    * @apiName deleteBook
    * @apiGroup Book
    *

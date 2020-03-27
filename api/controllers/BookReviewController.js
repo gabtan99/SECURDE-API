@@ -1,6 +1,6 @@
-const BookInstance = require('../models/BookInstance');
+const BookReview = require('../models/BookReview');
 
-const BookInstanceController = () => {
+const BookReviewController = () => {
   /**
    * @api {post} /private/book/{book_id}/instance Create Book Instance
    * @apiName createBookInstance
@@ -21,29 +21,24 @@ const BookInstanceController = () => {
    * @apiError BookNotFound Book is non-existent.
    *
    */
-  const createBookInstance = async (req, res) => {
+  const createBookReview = async (req, res) => {
     const { book_id } = req.params;
-    const { status, language } = req.body;
+    const { review } = req.body;
+    const user_id = req.token.id_number;
 
     try {
-      const bookInstance = await BookInstance.create({
+      const bookReview = await BookReview.create({
         book_id,
-        status,
-        language,
+        user_id,
+        review,
       });
 
-      return res.status(200).json({ bookInstance });
+      return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {
       console.log(err);
 
-      const { name } = err;
-      if (name === 'SequelizeForeignKeyConstraintError') {
-        return res.status(500).json({
-          err: {
-            name: 'BookNotFound',
-            msg: 'Book is non-existent',
-          },
-        });
+      if (err.name === 'SequelizeForeignKeyConstraintError') {
+        return res.status(404).json({ msg: 'Book is non-existent' });
       }
       return res.status(500).json({ msg: 'Internal server error' });
     }
@@ -95,9 +90,9 @@ const BookInstanceController = () => {
   };
 
   return {
-    createBookInstance,
+    createBookReview,
     deleteBookInstance,
   };
 };
 
-module.exports = BookInstanceController;
+module.exports = BookReviewController;

@@ -11,7 +11,6 @@ const BorrowedBook = Database.define(
       primaryKey: true,
       unique: true,
       autoIncrement: true,
-      allowNull: false,
       field: 'id',
     },
     book_instance_id: {
@@ -20,21 +19,20 @@ const BorrowedBook = Database.define(
       field: 'book_id',
     },
     user_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        field: 'user_id',
-      },
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      field: 'user_id',
+    },
     borrow_date: {
       type: Sequelize.DATE,
       allowNull: false,
       field: 'borrow_date',
     },
     return_date: {
-        type: Sequelize.DATE,
-        allowNull: true,
-        field: 'return_date',
+      type: Sequelize.DATE,
+      allowNull: true,
+      field: 'return_date',
     },
-   
   },
   {
     tableName,

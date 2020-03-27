@@ -1,4 +1,7 @@
 const Book = require('../models/Book');
+const BookInstance = require('../models/BookInstance');
+const BookReview = require('../models/BookReview');
+const User = require('../models/User');
 const { Op, literal } = require('sequelize');
 
 const BOOKS_PER_PAGE = 10;
@@ -63,13 +66,16 @@ const BookController = () => {
    *
    * @apiParam {Number} id Book id.
    *
-   * @apiSuccess {Object} book Complete book object.
+   * @apiSuccess {Object} book Complete book object with instances.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
    *       "book": "{}"
    *     }
+   *
+   * @apiError ResourceNotFound Book not found.
+   *
    */
 
   const getBook = async (req, res) => {
@@ -80,7 +86,22 @@ const BookController = () => {
         where: {
           id: id,
         },
+        include: [
+          {
+            model: BookInstance,
+            required: true,
+            attributes: ['id', 'status', 'language'],
+          },
+          {
+            model: BookReview,
+            required: true,
+            include: [{ model: User, attributes: ['id_number', 'name'] }],
+            attributes: ['id', 'review'],
+          },
+        ],
       });
+
+      if (book === null) return res.status(404).json({ msg: 'Book not found' });
 
       return res.status(200).json({ book });
     } catch (err) {

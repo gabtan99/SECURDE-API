@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const Database = require('../../config/database');
+const User = require('./User');
 
 const tableName = 'book_review';
 
@@ -11,7 +12,6 @@ const BookReview = Database.define(
       primaryKey: true,
       unique: true,
       autoIncrement: true,
-      allowNull: false,
       field: 'id',
     },
     book_id: {
@@ -20,21 +20,22 @@ const BookReview = Database.define(
       field: 'book_id',
     },
     user_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        field: 'user_id',
-      },
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      field: 'user_id',
+    },
     review: {
       type: Sequelize.STRING,
       allowNull: false,
       field: 'review',
     },
-   
   },
   {
     tableName,
     timestamps: false,
   },
 );
+
+BookReview.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = BookReview;

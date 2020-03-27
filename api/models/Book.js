@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const Database = require('../../config/database');
+const BookInstance = require('./BookInstance');
+const BookReview = require('./BookReview');
 
 const tableName = 'book';
 
@@ -33,20 +35,10 @@ const Book = Database.define(
       allowNull: true,
       field: 'isbn',
     },
-    status: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      field: 'status',
-    },
     authors: {
       type: Sequelize.STRING,
       allowNull: false,
       field: 'authors',
-    },
-    reviews: {
-      type: Sequelize.STRING,
-      allowNull: true,
-      field: 'reviews',
     },
   },
   {
@@ -54,5 +46,8 @@ const Book = Database.define(
     timestamps: false,
   },
 );
+
+Book.hasMany(BookInstance, { foreignKey: 'book_id' });
+Book.hasMany(BookReview, { foreignKey: 'book_id' });
 
 module.exports = Book;

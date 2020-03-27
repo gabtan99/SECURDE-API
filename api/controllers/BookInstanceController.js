@@ -1,9 +1,8 @@
 const BookInstance = require('../models/BookInstance');
-const { Op } = require('sequelize');
 
 const BookInstanceController = () => {
   /**
-   * @api {post} /private/book/:book_id/instance Create Book Instance
+   * @api {post} /private/book/{book_id}/instance Create Book Instance
    * @apiName createBookInstance
    * @apiGroup Book Instance
    *
@@ -29,7 +28,7 @@ const BookInstanceController = () => {
     try {
       const bookInstance = await BookInstance.create({
         book_id,
-        status,
+        status: status.toUpperCase(),
         language,
       });
 
@@ -51,7 +50,57 @@ const BookInstanceController = () => {
   };
 
   /**
-   * @api {delete} /private/:book_id/instance/:id Delete Book Instance
+   * @api {patch} /private/book/{book_id}/instance/{id} Update Book Instance
+   * @apiName updateBookInstance
+   * @apiGroup Book Instance
+   *
+   * @apiParam {Number} book_id Book ID (URL parameter).
+   * @apiParam {Number} id Book Instance ID (URL parameter).
+   * @apiParam {String} [status] Status of book instance.
+   * @apiParam {String} [language] language of the book instance.
+   *
+   * @apiSuccess {String} msg Success Message.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "msg": "Book Instance Updated"
+   *     }
+   *
+   * @apiError ResourceNotFound Book Instance is non-existent.
+   *
+   */
+  const updateBookInstance = async (req, res) => {
+    const { book_id, id } = req.params;
+    const { status, language } = req.body;
+
+    try {
+      const bookInstance = await BookInstance.update(
+        {
+          status: status.toUpperCase(),
+          language,
+        },
+        {
+          where: { book_id, id },
+        },
+      );
+
+      if (!bookInstance[0]) {
+        return res.status(404).json({
+          err: { name: 'ResourceNotFound', msg: 'Book Instance not found' },
+        });
+      }
+
+      return res.status(200).json({ msg: 'Book Instance Updated' });
+    } catch (err) {
+      console.log(err);
+
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
+  /**
+   * @api {delete} /private/{book_id}/instance/{id} Delete Book Instance
    * @apiName deleteBookInstanceByID
    * @apiGroup Book Instance
    *
@@ -97,6 +146,7 @@ const BookInstanceController = () => {
 
   return {
     createBookInstance,
+    updateBookInstance,
     deleteBookInstance,
   };
 };

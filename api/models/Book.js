@@ -45,11 +45,6 @@ const Book = Database.define(
       allowNull: false,
       field: 'authors',
     },
-    reviews: {
-      type: Sequelize.STRING,
-      allowNull: true,
-      field: 'reviews',
-    },
   },
   {
     tableName,

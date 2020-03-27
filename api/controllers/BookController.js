@@ -89,12 +89,10 @@ const BookController = () => {
         include: [
           {
             model: BookInstance,
-            required: true,
             attributes: ['id', 'status', 'language'],
           },
           {
             model: BookReview,
-            required: true,
             include: [{ model: User, attributes: ['id_number', 'name'] }],
             attributes: ['id', 'review'],
           },
@@ -121,7 +119,6 @@ const BookController = () => {
    * @apiParam {Number} isbn 3-digit Call Number based on the Dewey Decimal System.
    * @apiParam {String} status status of the book.
    * @apiParam {String} authors authors of the book.
-   * @apiParam {String} reviews reviews of the book.
    *
    * @apiSuccess {Object} book Complete book details.
    *
@@ -136,7 +133,7 @@ const BookController = () => {
    *
    */
   const createBook = async (req, res) => {
-    const { title, publisher, year_of_publication, isbn, status, authors, reviews } = req.body;
+    const { title, publisher, year_of_publication, isbn, status, authors } = req.body;
 
     try {
       const book = await Book.create({
@@ -146,7 +143,6 @@ const BookController = () => {
         isbn,
         status: status.toUpperCase(),
         authors,
-        reviews,
       });
 
       return res.status(200).json({ book });

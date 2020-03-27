@@ -10,6 +10,7 @@ const privateRoutes = {
   'DELETE /book/:id': 'BookController.deleteBook',
 
   'POST /book/:book_id/instance': 'BookInstanceController.createBookInstance',
+  'PATCH /book/:book_id/instance/:id': 'BookInstanceController.updateBookInstance',
   'DELETE /book/:book_id/instance/:id': 'BookInstanceController.deleteBookInstance',
 
   'POST /review/:book_id': 'BookReviewController.createBookReview',

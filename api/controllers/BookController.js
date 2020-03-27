@@ -155,6 +155,7 @@ const BookController = () => {
    * @apiName updateBook
    * @apiGroup Book
    *
+   * @apiParam {Number} id Book id.
    * @apiParam {String} [title] Title of book.
    * @apiParam {String} [publisher] Publisher of book.
    * @apiParam {Number} [year_of_publication] Year of publication of book.
@@ -162,12 +163,11 @@ const BookController = () => {
    * @apiParam {String} [status] status of the book.
    * @apiParam {String} [authors] authors of the book.
    *
-   * @apiSuccess {Object} book Complete book details.
+   * @apiSuccess {String} msg Success message.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "book": "{}",
    *       "msg": "Book Updated"
    *     }
    *
@@ -188,7 +188,9 @@ const BookController = () => {
           isbn,
           authors,
         },
-        { where: { id } },
+        {
+          where: { id },
+        },
       );
 
       if (!book[0]) {

@@ -4,7 +4,7 @@ const BookReviewController = () => {
   /**
    * @api {post} /private/review/{book_id} Review a Book
    * @apiName reviewBook
-   * @apiGroup Book
+   * @apiGroup Book Review
    *
    * @apiParam {Number} book_id Book ID.
    * @apiParam {String} review Content of the review.

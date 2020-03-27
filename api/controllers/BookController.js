@@ -117,7 +117,6 @@ const BookController = () => {
    * @apiParam {String} publisher Publisher of book.
    * @apiParam {Number} year_of_publication Year of publication of book.
    * @apiParam {Number} isbn 3-digit Call Number based on the Dewey Decimal System.
-   * @apiParam {String} status status of the book.
    * @apiParam {String} authors authors of the book.
    *
    * @apiSuccess {Object} book Complete book details.
@@ -133,6 +132,49 @@ const BookController = () => {
    *
    */
   const createBook = async (req, res) => {
+    const { title, publisher, year_of_publication, isbn, authors } = req.body;
+
+    try {
+      const book = await Book.create({
+        title,
+        publisher,
+        year_of_publication,
+        isbn,
+        authors,
+      });
+
+      return res.status(200).json({ book });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: 'Internal server error' });
+    }
+  };
+
+  /**
+   * @api {patch} /private/book Update a Book
+   * @apiName updateBook
+   * @apiGroup Book
+   *
+   * @apiParam {String} [title] Title of book.
+   * @apiParam {String} [publisher] Publisher of book.
+   * @apiParam {Number} [year_of_publication] Year of publication of book.
+   * @apiParam {Number} [isbn] 3-digit Call Number based on the Dewey Decimal System.
+   * @apiParam {String} [status] status of the book.
+   * @apiParam {String} [authors] authors of the book.
+   *
+   * @apiSuccess {Object} book Complete book details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "book": "{}"
+   *     }
+   *
+   * @apiError ResourceNotFound Book not found.
+   *
+   *
+   */
+  const updateBook = async (req, res) => {
     const { title, publisher, year_of_publication, isbn, status, authors } = req.body;
 
     try {

@@ -35,11 +35,6 @@ const Book = Database.define(
       allowNull: true,
       field: 'isbn',
     },
-    status: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      field: 'status',
-    },
     authors: {
       type: Sequelize.STRING,
       allowNull: false,

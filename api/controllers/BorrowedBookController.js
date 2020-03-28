@@ -1,5 +1,6 @@
 const BorrowedBook = require('../models/BorrowedBook');
 const BookInstance = require('../models/BookInstance');
+const Book = require('../models/Book');
 
 const BorrowedBookController = () => {
   /**
@@ -84,6 +85,19 @@ const BorrowedBookController = () => {
         where: {
           user_id: id_number,
         },
+        attributes: ['id', 'borrow_date', 'return_date'],
+        include: [
+          {
+            model: BookInstance,
+            attributes: ['id', 'language'],
+            include: [
+              {
+                model: Book,
+                attributes: ['id', 'title', 'authors'],
+              },
+            ],
+          },
+        ],
       });
 
       return res.status(200).json({ history });

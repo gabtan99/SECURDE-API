@@ -36,4 +36,7 @@ const BookInstance = Database.define(
   },
 );
 
+Book.hasMany(BookInstance, { foreignKey: 'book_id' });
+BookInstance.belongsTo(Book, { foreignKey: 'book_id' });
+
 module.exports = BookInstance;

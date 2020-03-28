@@ -1,4 +1,5 @@
 const BookReview = require('../models/BookReview');
+const Book = require('../models/Book');
 
 const BookReviewController = () => {
   /**
@@ -66,6 +67,13 @@ const BookReviewController = () => {
         where: {
           user_id: id_number,
         },
+        attributes: ['id', 'review'],
+        include: [
+          {
+            model: Book,
+            attributes: ['id', 'title', 'authors'],
+          },
+        ],
       });
 
       return res.status(200).json({ reviews });

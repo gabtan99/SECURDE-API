@@ -57,7 +57,7 @@ const BookInstanceController = () => {
    *
    * @apiParam {Number} book_id Book ID (URL parameter).
    * @apiParam {Number} id Book Instance ID (URL parameter).
-   * @apiParam {String} [status] Status of book instance.
+   * @apiParam {String} [status] Status of book instance [RESERVED, AVAILABLE] (Upper-cased).
    * @apiParam {String} [language] language of the book instance.
    *
    * @apiSuccess {String} msg Success Message.
@@ -78,7 +78,7 @@ const BookInstanceController = () => {
     try {
       const bookInstance = await BookInstance.update(
         {
-          status: status.toUpperCase(),
+          status,
           language,
         },
         {
@@ -92,7 +92,7 @@ const BookInstanceController = () => {
         });
       }
 
-      if (status.toUpperCase() === 'AVAILABLE') {
+      if (status === 'AVAILABLE') {
         const latest = await BorrowedBook.findAll({
           attributes: [Sequelize.fn('max', Sequelize.col('id'))],
           where: { book_instance_id: id },

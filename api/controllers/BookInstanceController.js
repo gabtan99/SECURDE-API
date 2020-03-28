@@ -92,6 +92,23 @@ const BookInstanceController = () => {
         });
       }
 
+      if (status.toUpperCase() === 'AVAILABLE') {
+        const latest = await BorrowedBook.findAll({
+          attributes: [Sequelize.fn('max', Sequelize.col('id'))],
+          where: { book_instance_id: id },
+          raw: true,
+        });
+
+        await BorrowedBook.update(
+          {
+            return_date: Sequelize.fn('NOW'),
+          },
+          {
+            where: { id: latest[0].max },
+          },
+        );
+      }
+
       return res.status(200).json({ msg: 'Book Instance Updated' });
     } catch (err) {
       console.log(err);

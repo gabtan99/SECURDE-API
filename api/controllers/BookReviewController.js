@@ -43,6 +43,21 @@ const BookReviewController = () => {
     }
   };
 
+  /**
+   * @api {get} /private/review Get User Review History
+   * @apiName reviewHistory
+   * @apiGroup Book Review
+   *
+   * @apiSuccess {Object} List of all user reviews.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "reviews": "[]"
+   *     }
+   *
+   *
+   */
   const getUserReviews = async (req, res) => {
     const { id_number } = req.token;
 

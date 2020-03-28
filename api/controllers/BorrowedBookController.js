@@ -31,7 +31,10 @@ const BorrowedBookController = () => {
         .then(async bookInstance => {
           if (bookInstance.status !== 'AVAILABLE') {
             return res.status(400).json({
-              err: { name: 'Unavailable', msg: 'Book Instance is already reserved.' },
+              err: {
+                name: 'Unavailable',
+                msg: 'Book Instance is already reserved.',
+              },
             });
           }
           bookInstance.update({ status: 'RESERVED' });
@@ -43,7 +46,10 @@ const BorrowedBookController = () => {
         })
         .catch(() => {
           return res.status(404).json({
-            err: { name: 'BookInstanceNotFound', msg: 'Book Instance does not exist.' },
+            err: {
+              name: 'BookInstanceNotFound',
+              msg: 'Book Instance does not exist.',
+            },
           });
         });
 
@@ -55,6 +61,21 @@ const BorrowedBookController = () => {
     }
   };
 
+  /**
+   * @api {get} /private/borrow Get User Borrow History
+   * @apiName borrowHistory
+   * @apiGroup Book
+   *
+   * @apiSuccess {Object} List of user borrow history.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "history": "[]"
+   *     }
+   *
+   *
+   */
   const getUserBorrowHistory = async (req, res) => {
     const { id_number } = req.token;
 

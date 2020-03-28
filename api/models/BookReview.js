@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const Database = require('../../config/database');
 const User = require('./User');
+const Book = require('./Book');
 
 const tableName = 'book_review';
 

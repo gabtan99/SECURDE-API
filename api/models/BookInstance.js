@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const Database = require('../../config/database');
+const Book = require('../models/Book');
 
 const tableName = 'book_instance';
 

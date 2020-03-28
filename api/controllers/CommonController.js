@@ -1,4 +1,7 @@
 const authService = require('../services/auth.service');
+const Book = require('../models/Book');
+const BookReview = require('../models/BookReview');
+const BorrowedBook = require('../models/BorrowedBook');
 
 const CommonController = () => {
   const ping = (req, res) => {

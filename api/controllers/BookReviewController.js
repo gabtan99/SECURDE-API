@@ -43,8 +43,26 @@ const BookReviewController = () => {
     }
   };
 
+  const getUserReviews = async (req, res) => {
+    const { id_number } = req.token;
+
+    try {
+      const reviews = await BookReview.findAll({
+        where: {
+          user_id: id_number,
+        },
+      });
+
+      return res.status(200).json({ reviews });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: err.name });
+    }
+  };
+
   return {
     createBookReview,
+    getUserReviews,
   };
 };
 

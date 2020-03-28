@@ -1,4 +1,6 @@
+const Sequelize = require('sequelize');
 const BookInstance = require('../models/BookInstance');
+const BorrowedBook = require('../models/BorrowedBook');
 
 const BookInstanceController = () => {
   /**

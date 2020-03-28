@@ -55,8 +55,26 @@ const BorrowedBookController = () => {
     }
   };
 
+  const getUserBorrowHistory = async (req, res) => {
+    const { id_number } = req.token;
+
+    try {
+      const history = await BorrowedBook.findAll({
+        where: {
+          user_id: id_number,
+        },
+      });
+
+      return res.status(200).json({ history });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: err.name });
+    }
+  };
+
   return {
     borrowBook,
+    getUserBorrowHistory,
   };
 };
 

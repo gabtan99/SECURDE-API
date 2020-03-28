@@ -1,4 +1,5 @@
 const BorrowedBook = require('../models/BorrowedBook');
+const BookInstance = require('../models/BookInstance');
 
 const BorrowedBookController = () => {
   /**
@@ -16,7 +17,7 @@ const BorrowedBookController = () => {
    *       "msg": "SUCCESS"
    *     }
    *
-   * @apiError BookInstanceNotFound Book Instance does not exist.
+   * @apiError Unavailable Book Instance is already reserved.
    *
    */
   const borrowBook = async (req, res) => {
@@ -24,18 +25,32 @@ const BorrowedBookController = () => {
     const user_id = req.token.id_number;
 
     try {
-      const borrowedBook = await BorrowedBook.create({
-        book_instance_id,
-        user_id,
-      });
+      await BookInstance.findOne({
+        where: { id: book_instance_id },
+      })
+        .then(async bookInstance => {
+          if (bookInstance.status !== 'AVAILABLE') {
+            return res.status(400).json({
+              err: { name: 'Unavailable', msg: 'Book Instance is already reserved.' },
+            });
+          }
+          bookInstance.update({ status: 'RESERVED' });
+
+          const borrowedBook = await BorrowedBook.create({
+            book_instance_id,
+            user_id,
+          });
+        })
+        .catch(() => {
+          return res.status(404).json({
+            err: { name: 'BookInstanceNotFound', msg: 'Book Instance does not exist.' },
+          });
+        });
 
       return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {
       console.log(err);
 
-      if (err.name === 'SequelizeForeignKeyConstraintError') {
-        return res.status(404).json({ msg: 'Book Instance does not exist' });
-      }
       return res.status(500).json({ msg: 'Internal server error' });
     }
   };

@@ -26,7 +26,7 @@ const BookReviewController = () => {
     const user_id = req.token.id_number;
 
     try {
-      const bookReview = await BookReview.create({
+      await BookReview.create({
         book_id,
         user_id,
         review,

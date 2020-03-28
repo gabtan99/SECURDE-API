@@ -7,7 +7,6 @@ const BookInstanceController = () => {
    * @apiGroup Book Instance
    *
    * @apiParam {Number} book_id Book ID of book instance (URL parameter).
-   * @apiParam {String} status Status of book instance.
    * @apiParam {String} language language of the book instance.
    *
    * @apiSuccess {Object} Complete book instance details.
@@ -23,12 +22,12 @@ const BookInstanceController = () => {
    */
   const createBookInstance = async (req, res) => {
     const { book_id } = req.params;
-    const { status, language } = req.body;
+    const { language } = req.body;
 
     try {
       const bookInstance = await BookInstance.create({
         book_id,
-        status: status.toUpperCase(),
+        status: 'AVAILABLE',
         language,
       });
 

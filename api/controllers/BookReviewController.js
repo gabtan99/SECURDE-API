@@ -1,8 +1,9 @@
 const BookReview = require('../models/BookReview');
+const Book = require('../models/Book');
 
 const BookReviewController = () => {
   /**
-   * @api {post} /private/review/{book_id} Review a Book
+   * @api {post} /private/review/{book_id} Review Book
    * @apiName reviewBook
    * @apiGroup Book Review
    *
@@ -17,7 +18,7 @@ const BookReviewController = () => {
    *       "msg": "SUCCESS"
    *     }
    *
-   * @apiError BookNotFound Book is non-existent.
+   * @apiError BookNotFound Book does not exist.
    *
    */
   const createBookReview = async (req, res) => {
@@ -26,7 +27,7 @@ const BookReviewController = () => {
     const user_id = req.token.id_number;
 
     try {
-      const bookReview = await BookReview.create({
+      await BookReview.create({
         book_id,
         user_id,
         review,
@@ -37,14 +38,54 @@ const BookReviewController = () => {
       console.log(err);
 
       if (err.name === 'SequelizeForeignKeyConstraintError') {
-        return res.status(404).json({ msg: 'Book is non-existent' });
+        return res.status(404).json({ msg: 'Book does not exist' });
       }
       return res.status(500).json({ msg: 'Internal server error' });
     }
   };
 
+  /**
+   * @api {get} /private/review Get User Review History
+   * @apiName reviewHistory
+   * @apiGroup Book Review
+   *
+   * @apiSuccess {Object} List of all user reviews.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "reviews": "[]"
+   *     }
+   *
+   *
+   */
+  const getUserReviews = async (req, res) => {
+    const { id_number } = req.token;
+
+    try {
+      const reviews = await BookReview.findAll({
+        where: {
+          user_id: id_number,
+        },
+        attributes: ['id', 'review'],
+        include: [
+          {
+            model: Book,
+            attributes: ['id', 'title', 'authors'],
+          },
+        ],
+      });
+
+      return res.status(200).json({ reviews });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: err.name });
+    }
+  };
+
   return {
     createBookReview,
+    getUserReviews,
   };
 };
 

@@ -60,13 +60,13 @@ const BookController = () => {
   };
 
   /**
-   * @api {get} /public/books/{id} Get Book with ID
+   * @api {get} /public/books/{id} Get Book Details
    * @apiName getBookbyID
    * @apiGroup Book
    *
    * @apiParam {Number} id Book id.
    *
-   * @apiSuccess {Object} book Complete book object with instances.
+   * @apiSuccess {Object} book Complete book object with instances / reviews.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK

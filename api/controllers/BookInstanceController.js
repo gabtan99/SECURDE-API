@@ -1,4 +1,6 @@
+const Sequelize = require('sequelize');
 const BookInstance = require('../models/BookInstance');
+const BorrowedBook = require('../models/BorrowedBook');
 
 const BookInstanceController = () => {
   /**
@@ -7,7 +9,6 @@ const BookInstanceController = () => {
    * @apiGroup Book Instance
    *
    * @apiParam {Number} book_id Book ID of book instance (URL parameter).
-   * @apiParam {String} status Status of book instance.
    * @apiParam {String} language language of the book instance.
    *
    * @apiSuccess {Object} Complete book instance details.
@@ -18,17 +19,17 @@ const BookInstanceController = () => {
    *       "bookInstance": "{}"
    *     }
    *
-   * @apiError BookNotFound Book is non-existent.
+   * @apiError BookNotFound Book does not exist.
    *
    */
   const createBookInstance = async (req, res) => {
     const { book_id } = req.params;
-    const { status, language } = req.body;
+    const { language } = req.body;
 
     try {
       const bookInstance = await BookInstance.create({
         book_id,
-        status: status.toUpperCase(),
+        status: 'AVAILABLE',
         language,
       });
 
@@ -41,7 +42,7 @@ const BookInstanceController = () => {
         return res.status(500).json({
           err: {
             name: 'BookNotFound',
-            msg: 'Book is non-existent',
+            msg: 'Book does not exist',
           },
         });
       }
@@ -56,7 +57,7 @@ const BookInstanceController = () => {
    *
    * @apiParam {Number} book_id Book ID (URL parameter).
    * @apiParam {Number} id Book Instance ID (URL parameter).
-   * @apiParam {String} [status] Status of book instance.
+   * @apiParam {String} [status] Status of book instance [RESERVED, AVAILABLE] (Upper-cased).
    * @apiParam {String} [language] language of the book instance.
    *
    * @apiSuccess {String} msg Success Message.
@@ -77,7 +78,7 @@ const BookInstanceController = () => {
     try {
       const bookInstance = await BookInstance.update(
         {
-          status: status.toUpperCase(),
+          status,
           language,
         },
         {
@@ -89,6 +90,23 @@ const BookInstanceController = () => {
         return res.status(404).json({
           err: { name: 'ResourceNotFound', msg: 'Book Instance not found' },
         });
+      }
+
+      if (status === 'AVAILABLE') {
+        const latest = await BorrowedBook.findAll({
+          attributes: [Sequelize.fn('max', Sequelize.col('id'))],
+          where: { book_instance_id: id },
+          raw: true,
+        });
+
+        await BorrowedBook.update(
+          {
+            return_date: Sequelize.fn('NOW'),
+          },
+          {
+            where: { id: latest[0].max },
+          },
+        );
       }
 
       return res.status(200).json({ msg: 'Book Instance Updated' });

@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const Database = require('../../config/database');
+const Book = require('../models/Book');
 
 const tableName = 'book_instance';
 
@@ -34,5 +35,8 @@ const BookInstance = Database.define(
     timestamps: false,
   },
 );
+
+Book.hasMany(BookInstance, { foreignKey: 'book_id' });
+BookInstance.belongsTo(Book, { foreignKey: 'book_id' });
 
 module.exports = BookInstance;

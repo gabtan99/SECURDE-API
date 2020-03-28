@@ -18,7 +18,7 @@ const BookInstanceController = () => {
    *       "bookInstance": "{}"
    *     }
    *
-   * @apiError BookNotFound Book is non-existent.
+   * @apiError BookNotFound Book does not exist.
    *
    */
   const createBookInstance = async (req, res) => {
@@ -41,7 +41,7 @@ const BookInstanceController = () => {
         return res.status(500).json({
           err: {
             name: 'BookNotFound',
-            msg: 'Book is non-existent',
+            msg: 'Book does not exist',
           },
         });
       }

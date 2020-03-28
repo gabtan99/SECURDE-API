@@ -32,7 +32,7 @@ const UserController = () => {
   const register = async (req, res) => {
     const { id_number, name, username, password, email_address, access } = req.body;
 
-    if (!(access === 'STUDENT' || access === 'TEACHER'))
+    if (!(access.toUpperCase() === 'STUDENT' || access.toUpperCase() === 'TEACHER'))
       return res.status(401).json({
         error: {
           name: 'Unauthorized',
@@ -44,9 +44,9 @@ const UserController = () => {
       const user = await User.create({
         id_number,
         name,
-        username,
+        username: username.toLowerCase(),
         password,
-        email_address,
+        email_address: email_address.toLowerCase(),
         access: access.toUpperCase(),
       });
       const token = authService().issue({
@@ -101,7 +101,7 @@ const UserController = () => {
       try {
         const user = await User.findOne({
           where: {
-            username,
+            username: username.toLowerCase(),
           },
         });
 
@@ -261,9 +261,9 @@ const UserController = () => {
       const user = await User.create({
         id_number,
         name,
-        username,
+        username: username.toLowerCase(),
         password,
-        email_address,
+        email_address: email_address.toLowerCase(),
         access: 'MANAGER',
       });
 

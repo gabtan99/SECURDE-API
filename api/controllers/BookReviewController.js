@@ -2,7 +2,7 @@ const BookReview = require('../models/BookReview');
 
 const BookReviewController = () => {
   /**
-   * @api {post} /private/review/{book_id} Review a Book
+   * @api {post} /private/review/{book_id} Review Book
    * @apiName reviewBook
    * @apiGroup Book Review
    *
@@ -17,7 +17,7 @@ const BookReviewController = () => {
    *       "msg": "SUCCESS"
    *     }
    *
-   * @apiError BookNotFound Book is non-existent.
+   * @apiError BookNotFound Book does not exist.
    *
    */
   const createBookReview = async (req, res) => {
@@ -37,7 +37,7 @@ const BookReviewController = () => {
       console.log(err);
 
       if (err.name === 'SequelizeForeignKeyConstraintError') {
-        return res.status(404).json({ msg: 'Book is non-existent' });
+        return res.status(404).json({ msg: 'Book does not exist' });
       }
       return res.status(500).json({ msg: 'Internal server error' });
     }

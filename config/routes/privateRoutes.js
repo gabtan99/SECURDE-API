@@ -14,6 +14,8 @@ const privateRoutes = {
   'DELETE /book/:book_id/instance/:id': 'BookInstanceController.deleteBookInstance',
 
   'POST /review/:book_id': 'BookReviewController.createBookReview',
+
+  'POST /borrow/:book_instance_id': 'BorrowedBookController.borrowBook',
 };
 
 module.exports = privateRoutes;

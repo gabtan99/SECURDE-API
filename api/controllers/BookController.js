@@ -128,6 +128,7 @@ const BookController = () => {
    *     }
    *
    * @apiError ResourceNotFound Book not found.
+   * @apiError SequelizeUniqueConstraintError ISBN already exists.
    *
    *
    */
@@ -146,6 +147,11 @@ const BookController = () => {
       return res.status(200).json({ book });
     } catch (err) {
       console.log(err);
+      const { name } = err;
+
+      if (name === 'SequelizeUniqueConstraintError')
+        return res.status(409).json({ error: { name, msg: 'ISBN already exists.' } });
+
       return res.status(500).json({ msg: 'Internal server error' });
     }
   };

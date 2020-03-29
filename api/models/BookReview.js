@@ -37,6 +37,8 @@ const BookReview = Database.define(
   },
 );
 
+Book.hasMany(BookReview, { foreignKey: 'book_id' });
+BookReview.belongsTo(Book, { foreignKey: 'book_id' });
 BookReview.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = BookReview;

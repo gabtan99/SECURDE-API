@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const logAction = require('../services/logger.service');
 const bcryptService = require('../services/bcrypt.service');
 const authService = require('../services/auth.service');
 
@@ -117,6 +118,7 @@ const UserController = () => {
             access: user.access,
           });
 
+          logAction({ user_id: user.id_number, type: 'USER', action: 'Logged in.' });
           return res.status(200).json({ token, user });
         }
 

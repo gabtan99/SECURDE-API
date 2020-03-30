@@ -1,6 +1,10 @@
 const Sequelize = require('sequelize');
+const Book = require('../models/Book');
 const BookInstance = require('../models/BookInstance');
 const BorrowedBook = require('../models/BorrowedBook');
+const logAction = require('../services/logger.service');
+
+const LOG_TYPE = 'BOOK INSTANCE';
 
 const BookInstanceController = () => {
   /**
@@ -27,10 +31,27 @@ const BookInstanceController = () => {
     const { language } = req.body;
 
     try {
-      const bookInstance = await BookInstance.create({
-        book_id,
-        status: 'AVAILABLE',
-        language,
+      const bookInstance = await BookInstance.create(
+        {
+          book_id,
+          status: 'AVAILABLE',
+          language,
+        },
+        {
+          include: [
+            {
+              model: Book,
+              attributes: ['id', 'title', 'authors'],
+            },
+          ],
+        },
+      );
+
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Added',
+        description: `Instance ID: ${bookInstance.id}\nBook: ${bookInstance.book.title} by ${bookInstance.book.authors} `,
       });
 
       return res.status(200).json({ bookInstance });
@@ -83,6 +104,8 @@ const BookInstanceController = () => {
         },
         {
           where: { book_id, id },
+          returning: true,
+          raw: true,
         },
       );
 
@@ -108,6 +131,15 @@ const BookInstanceController = () => {
           },
         );
       }
+
+      const result = bookInstance[1][0];
+
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Updated',
+        description: `Instance ID: ${result.id}`,
+      });
 
       return res.status(200).json({ msg: 'Book Instance Updated' });
     } catch (err) {
@@ -147,13 +179,21 @@ const BookInstanceController = () => {
         },
       });
 
-      if (!deleted)
+      if (!deleted) {
         return res.status(404).json({
           err: {
             name: 'ResourceNotFound',
             msg: 'Book instance not found',
           },
         });
+      }
+
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Deleted',
+        description: `Instance ID: ${id}`,
+      });
 
       return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {

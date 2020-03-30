@@ -3,6 +3,8 @@ const logAction = require('../services/logger.service');
 const bcryptService = require('../services/bcrypt.service');
 const authService = require('../services/auth.service');
 
+const LOG_TYPE = 'USER';
+
 const UserController = () => {
   /**
    * @api {post} /public/register Register User
@@ -55,6 +57,12 @@ const UserController = () => {
         access: user.access,
       });
 
+      await logAction({
+        user_id: user.id_number,
+        type: LOG_TYPE,
+        action: 'Register',
+        description: `Name: ${user.name}\nEmail: ${user.email_address}\n`,
+      });
       return res.status(200).json({ token, user });
     } catch (err) {
       const { name, parent } = err;
@@ -118,7 +126,12 @@ const UserController = () => {
             access: user.access,
           });
 
-          logAction({ user_id: user.id_number, type: 'USER', action: 'Logged in.' });
+          await logAction({
+            user_id: user.id_number,
+            type: LOG_TYPE,
+            action: 'Login',
+            description: `Name: ${user.name}\nEmail: ${user.email_address}\n`,
+          });
           return res.status(200).json({ token, user });
         }
 
@@ -219,6 +232,13 @@ const UserController = () => {
           access: user.access,
         });
 
+        await logAction({
+          user_id: user.id_number,
+          type: LOG_TYPE,
+          action: 'Reset Password',
+          description: `Name: ${user.name}\nEmail: ${user.email_address}\n`,
+        });
+
         return res.status(200).json({ token, user, msg: 'Password Changed' });
       }
 
@@ -269,6 +289,12 @@ const UserController = () => {
         access: 'MANAGER',
       });
 
+      await logAction({
+        user_id: user.id_number,
+        type: LOG_TYPE,
+        action: 'Register Manager',
+        description: `ID: ${user.id_number}\nName: ${user.name}\nEmail: ${user.email_address}\n`,
+      });
       return res.status(200).json({ user });
     } catch (err) {
       const { name, parent } = err;

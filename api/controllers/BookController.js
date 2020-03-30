@@ -2,9 +2,11 @@ const Book = require('../models/Book');
 const BookInstance = require('../models/BookInstance');
 const BookReview = require('../models/BookReview');
 const User = require('../models/User');
+const logAction = require('../services/logger.service');
 const { Op, literal } = require('sequelize');
 
 const BOOKS_PER_PAGE = 10;
+const LOG_TYPE = 'BOOK';
 
 const BookController = () => {
   /**
@@ -144,6 +146,13 @@ const BookController = () => {
         authors,
       });
 
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Added',
+        description: `Book ID: ${book.id}\nTitle: ${book.title}\nPublisher: ${book.publisher}\nISBN: ${book.isbn}`,
+      });
+
       return res.status(200).json({ book });
     } catch (err) {
       console.log(err);
@@ -170,11 +179,13 @@ const BookController = () => {
    * @apiParam {String} [authors] authors of the book.
    *
    * @apiSuccess {String} msg Success message.
+   * @apiSuccess {Object} book Updated book.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "msg": "Book Updated"
+   *       "msg": "Book Updated",
+   *       "book": {}
    *     }
    *
    * @apiError ResourceNotFound Book not found.
@@ -196,6 +207,8 @@ const BookController = () => {
         },
         {
           where: { id },
+          returning: true,
+          raw: true,
         },
       );
 
@@ -204,6 +217,15 @@ const BookController = () => {
           err: { name: 'ResourceNotFound', msg: 'Book not found' },
         });
       }
+
+      const result = book[1][0];
+
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Updated',
+        description: `Book ID: ${result.id}\nTitle: ${result.title}\nPublisher: ${result.publisher}\nISBN: ${result.isbn}`,
+      });
 
       return res.status(200).json({ msg: 'Book Updated' });
     } catch (err) {
@@ -241,6 +263,13 @@ const BookController = () => {
         return res.status(404).json({
           err: { name: 'ResourceNotFound', msg: 'Book not found' },
         });
+
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Deleted',
+        description: `Book ID: ${id}`,
+      });
 
       return res.status(200).json({ msg: 'SUCCESS' });
     } catch (err) {

@@ -2,6 +2,10 @@ const Sequelize = require('sequelize');
 const Database = require('../../config/database');
 const Book = require('../models/Book');
 
+const hooks = {
+  afterCreate: bookInstance => bookInstance.reload(),
+};
+
 const tableName = 'book_instance';
 
 const BookInstance = Database.define(
@@ -31,10 +35,19 @@ const BookInstance = Database.define(
     },
   },
   {
+    hooks,
     tableName,
     timestamps: false,
   },
 );
+
+BookInstance.prototype.toJSON = function() {
+  const values = { ...this.get() };
+
+  delete values.book_id;
+
+  return values;
+};
 
 Book.hasMany(BookInstance, { foreignKey: 'book_id' });
 BookInstance.belongsTo(Book, { foreignKey: 'book_id' });

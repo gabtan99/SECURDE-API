@@ -52,7 +52,7 @@ const BorrowedBookController = () => {
             user_id,
             type: LOG_TYPE,
             action: 'Borrowed',
-            description: `ID ${borrowedBook.user_id} borrowed Book Instance ${borrowedBook.book_instance_id} `,
+            description: `Borrowed Book Instance ${borrowedBook.book_instance_id} `,
           });
         })
         .catch(() => {

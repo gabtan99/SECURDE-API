@@ -18,6 +18,8 @@ const privateRoutes = {
 
   'GET /borrow': 'BorrowedBookController.getUserBorrowHistory',
   'POST /borrow/:book_instance_id': 'BorrowedBookController.borrowBook',
+
+  'GET /logs': 'CommonController.getSystemLogs',
 };
 
 module.exports = privateRoutes;

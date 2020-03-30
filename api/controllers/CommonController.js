@@ -1,4 +1,5 @@
 const authService = require('../services/auth.service');
+const Log = require('../models/Log');
 
 const CommonController = () => {
   const ping = (req, res) => {
@@ -19,9 +20,21 @@ const CommonController = () => {
     });
   };
 
+  const getSystemLogs = async (req, res) => {
+    try {
+      const logs = await Log.findAll();
+
+      return res.status(200).json({ logs });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ msg: err.name });
+    }
+  };
+
   return {
     ping,
     validate,
+    getSystemLogs,
   };
 };
 

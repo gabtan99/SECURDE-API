@@ -55,7 +55,7 @@ const BookReviewController = () => {
         user_id,
         type: LOG_TYPE,
         action: 'Added',
-        description: `ID ${bookReview.user.id_number} reviewed ${bookReview.book.title} by ${bookReview.book.authors}`,
+        description: `Reviewed ${bookReview.book.title} by ${bookReview.book.authors}`,
       });
 
       return res.status(200).json({ msg: 'SUCCESS' });

@@ -1,15 +1,10 @@
 const Sequelize = require('sequelize');
 const Database = require('../../config/database');
 const User = require('./User');
-const Book = require('./Book');
 
-const hooks = {
-  afterCreate: bookReview => bookReview.reload(),
-};
+const tableName = 'log';
 
-const tableName = 'book_review';
-
-const BookReview = Database.define(
+const Log = Database.define(
   tableName,
   {
     id: {
@@ -19,40 +14,47 @@ const BookReview = Database.define(
       autoIncrement: true,
       field: 'id',
     },
-    book_id: {
-      type: Sequelize.INTEGER,
+    date_time: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
       allowNull: false,
-      field: 'book_id',
+      field: 'date_time',
     },
     user_id: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
       field: 'user_id',
     },
-    review: {
+    action: {
       type: Sequelize.STRING,
       allowNull: false,
-      field: 'review',
+      field: 'action',
+    },
+    type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'type',
+    },
+    description: {
+      type: Sequelize.STRING,
+      allowNull: true,
+      field: 'description',
     },
   },
   {
-    hooks,
     tableName,
     timestamps: false,
   },
 );
 
-BookReview.prototype.toJSON = function() {
+Log.prototype.toJSON = function() {
   const values = { ...this.get() };
 
-  delete values.book_id;
   delete values.user_id;
 
   return values;
 };
 
-Book.hasMany(BookReview, { foreignKey: 'book_id' });
-BookReview.belongsTo(Book, { foreignKey: 'book_id' });
-BookReview.belongsTo(User, { foreignKey: 'user_id' });
+Log.belongsTo(User, { foreignKey: 'user_id' });
 
-module.exports = BookReview;
+module.exports = Log;

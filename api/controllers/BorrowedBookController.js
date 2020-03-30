@@ -1,6 +1,9 @@
 const BorrowedBook = require('../models/BorrowedBook');
 const BookInstance = require('../models/BookInstance');
 const Book = require('../models/Book');
+const logAction = require('../services/logger.service');
+
+const LOG_TYPE = 'BOOK';
 
 const BorrowedBookController = () => {
   /**
@@ -43,6 +46,13 @@ const BorrowedBookController = () => {
           const borrowedBook = await BorrowedBook.create({
             book_instance_id,
             user_id,
+          });
+
+          await logAction({
+            user_id,
+            type: LOG_TYPE,
+            action: 'Borrowed',
+            description: `Borrowed Book Instance ${borrowedBook.book_instance_id} `,
           });
         })
         .catch(() => {

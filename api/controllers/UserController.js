@@ -1,6 +1,9 @@
 const User = require('../models/User');
+const logAction = require('../services/logger.service');
 const bcryptService = require('../services/bcrypt.service');
 const authService = require('../services/auth.service');
+
+const LOG_TYPE = 'USER';
 
 const UserController = () => {
   /**
@@ -54,6 +57,12 @@ const UserController = () => {
         access: user.access,
       });
 
+      await logAction({
+        user_id: user.id_number,
+        type: LOG_TYPE,
+        action: 'Register',
+        description: `N/A`,
+      });
       return res.status(200).json({ token, user });
     } catch (err) {
       const { name, parent } = err;
@@ -117,6 +126,12 @@ const UserController = () => {
             access: user.access,
           });
 
+          await logAction({
+            user_id: user.id_number,
+            type: LOG_TYPE,
+            action: 'Login',
+            description: `N/A`,
+          });
           return res.status(200).json({ token, user });
         }
 
@@ -217,6 +232,13 @@ const UserController = () => {
           access: user.access,
         });
 
+        await logAction({
+          user_id: user.id_number,
+          type: LOG_TYPE,
+          action: 'Reset Password',
+          description: `N/A`,
+        });
+
         return res.status(200).json({ token, user, msg: 'Password Changed' });
       }
 
@@ -267,6 +289,12 @@ const UserController = () => {
         access: 'MANAGER',
       });
 
+      await logAction({
+        user_id: req.token.id_number,
+        type: LOG_TYPE,
+        action: 'Register Manager',
+        description: `ID: ${user.id_number}\nName: ${user.name}\nEmail: ${user.email_address}\n`,
+      });
       return res.status(200).json({ user });
     } catch (err) {
       const { name, parent } = err;

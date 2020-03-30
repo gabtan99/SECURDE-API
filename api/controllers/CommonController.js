@@ -30,32 +30,48 @@ const CommonController = () => {
    * @apiGroup Activity Logs
    *
    *
+   * @apiParam {Number} [currentPage] Desired Page.
+   * @apiParam {Number} [pageSize] Number of elements per page.
+   * @apiParam {String} [dateFrom] Start date filter (valid moment js format).
+   * @apiParam {String} [dateTo] End date filter (valid moment js format).
+   * @apiParam {Object[]} [order] Order by conditions.
+   * @apiParamExample {json} Request-Example:
+   *     {
+   *      "currentPage": 1,
+   *      "pageSize": 2,
+   *      "dateFrom": "2020-03-30",
+   *      "dateTo": "2020-03-31",
+   *      "order": [["date_time", "DESC"]]
+   *      }
+   *
    * @apiSuccess {Object[]} logs List of activities.
+   * @apiSuccess {Object} meta Metadata for pagination.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "logs": []
+   *       "logs": [],
+   *       "meta": {}
    *     }
    *
    *
    */
   const getActivityLogs = async (req, res) => {
-    const { currentPage, pageSize, dateFrom, dateTo } = req.body;
+    const { currentPage, pageSize = 10, dateFrom, dateTo, order } = req.body;
     const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
-    let options = { where: {} };
+    let options = { where: {}, order: [] };
 
     if (dateFrom && dateTo)
       options.where.date_time = {
         [Op.between]: [moment().format(dateFrom), moment().format(dateTo)],
       };
+    if (order) options.order = order;
 
     try {
       const { rows, count } = await Log.findAndCountAll({
         limit,
         offset,
         ...options,
-        order: [['date_time', 'DESC']],
         include: [
           {
             model: User,

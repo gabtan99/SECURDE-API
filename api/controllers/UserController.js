@@ -61,7 +61,7 @@ const UserController = () => {
         user_id: user.id_number,
         type: LOG_TYPE,
         action: 'Register',
-        description: `Name: ${user.name}\nEmail: ${user.email_address}\n`,
+        description: `N/A`,
       });
       return res.status(200).json({ token, user });
     } catch (err) {
@@ -130,7 +130,7 @@ const UserController = () => {
             user_id: user.id_number,
             type: LOG_TYPE,
             action: 'Login',
-            description: `Name: ${user.name}\nEmail: ${user.email_address}\n`,
+            description: `N/A`,
           });
           return res.status(200).json({ token, user });
         }
@@ -236,7 +236,7 @@ const UserController = () => {
           user_id: user.id_number,
           type: LOG_TYPE,
           action: 'Reset Password',
-          description: `Name: ${user.name}\nEmail: ${user.email_address}\n`,
+          description: `N/A`,
         });
 
         return res.status(200).json({ token, user, msg: 'Password Changed' });
@@ -290,7 +290,7 @@ const UserController = () => {
       });
 
       await logAction({
-        user_id: user.id_number,
+        user_id: req.token.id_number,
         type: LOG_TYPE,
         action: 'Register Manager',
         description: `ID: ${user.id_number}\nName: ${user.name}\nEmail: ${user.email_address}\n`,

@@ -40,6 +40,8 @@
     "express-routes-mapper": "^1.0.2",
     "helmet": "^3.12.0",
     "jsonwebtoken": "^8.2.1",
+    "moment": "^2.24.0",
+    "paginate-info": "^1.0.4",
     "pg": "^7.18.2",
     "sequelize": "^5.21.5",
     "sqlite3": "^4.0.0"

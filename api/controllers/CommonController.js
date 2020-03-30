@@ -1,5 +1,4 @@
 const authService = require('../services/auth.service');
-const Log = require('../models/Log');
 
 const CommonController = () => {
   const ping = (req, res) => {

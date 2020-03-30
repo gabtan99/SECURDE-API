@@ -179,13 +179,11 @@ const BookController = () => {
    * @apiParam {String} [authors] authors of the book.
    *
    * @apiSuccess {String} msg Success message.
-   * @apiSuccess {Object} book Updated book.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
    *       "msg": "Book Updated",
-   *       "book": {}
    *     }
    *
    * @apiError ResourceNotFound Book not found.

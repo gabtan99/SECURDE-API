@@ -1,5 +1,9 @@
 const BookReview = require('../models/BookReview');
 const Book = require('../models/Book');
+const User = require('../models/User');
+const logAction = require('../services/logger.service');
+
+const LOG_TYPE = 'BOOK REVIEW';
 
 const BookReviewController = () => {
   /**
@@ -27,10 +31,31 @@ const BookReviewController = () => {
     const user_id = req.token.id_number;
 
     try {
-      await BookReview.create({
-        book_id,
+      const bookReview = await BookReview.create(
+        {
+          book_id,
+          user_id,
+          review,
+        },
+        {
+          include: [
+            {
+              model: Book,
+              attributes: ['id', 'title', 'authors'],
+            },
+            {
+              model: User,
+              attributes: ['id_number'],
+            },
+          ],
+        },
+      );
+
+      await logAction({
         user_id,
-        review,
+        type: LOG_TYPE,
+        action: 'Added',
+        description: `ID ${bookReview.user.id_number} reviewed ${bookReview.book.title} by ${bookReview.book.authors}`,
       });
 
       return res.status(200).json({ msg: 'SUCCESS' });

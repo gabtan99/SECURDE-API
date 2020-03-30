@@ -3,6 +3,10 @@ const Database = require('../../config/database');
 const User = require('./User');
 const Book = require('./Book');
 
+const hooks = {
+  afterCreate: bookReview => bookReview.reload(),
+};
+
 const tableName = 'book_review';
 
 const BookReview = Database.define(
@@ -32,10 +36,20 @@ const BookReview = Database.define(
     },
   },
   {
+    hooks,
     tableName,
     timestamps: false,
   },
 );
+
+BookReview.prototype.toJSON = function() {
+  const values = { ...this.get() };
+
+  delete values.book_id;
+  delete values.user_id;
+
+  return values;
+};
 
 Book.hasMany(BookReview, { foreignKey: 'book_id' });
 BookReview.belongsTo(Book, { foreignKey: 'book_id' });

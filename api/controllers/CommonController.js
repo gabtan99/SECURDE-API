@@ -25,7 +25,7 @@ const CommonController = () => {
   };
 
   /**
-   * @api {post} /private/logs Get Activity Logs
+   * @api {get} /private/logs Get Activity Logs
    * @apiName getLogs
    * @apiGroup Activity Logs
    *
@@ -57,7 +57,7 @@ const CommonController = () => {
    *
    */
   const getActivityLogs = async (req, res) => {
-    const { currentPage, pageSize = 10, dateFrom, dateTo, order } = req.body;
+    const { currentPage, pageSize = 10, dateFrom, dateTo, order } = req.query;
     const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
     let options = { where: {}, order: [] };
 

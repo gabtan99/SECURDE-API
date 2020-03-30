@@ -47,6 +47,14 @@ const Log = Database.define(
   },
 );
 
+Log.prototype.toJSON = function() {
+  const values = { ...this.get() };
+
+  delete values.user_id;
+
+  return values;
+};
+
 Log.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = Log;

@@ -22,9 +22,10 @@ const BookController = () => {
    *
    * @apiParamExample {json} Request-Example:
    *     {
+   *      "keyword": "dogs"
    *      "currentPage": 1,
    *      "pageSize": 2,
-   *      "sort": title:desc;id:desc
+   *      "sort": "title:desc;id:desc"
    *      }
    *
    * @apiSuccess {Object[]} books Array of books .
@@ -51,6 +52,8 @@ const BookController = () => {
         [Op.or]: {
           title: search(keyword),
           authors: search(keyword),
+          publisher: search(keyword),
+          isbn: search(keyword),
         },
       };
     }

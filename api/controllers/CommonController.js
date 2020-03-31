@@ -34,14 +34,14 @@ const CommonController = () => {
    * @apiParam {Number} [pageSize] Number of elements per page.
    * @apiParam {String} [dateFrom] Start date filter (valid moment js format).
    * @apiParam {String} [dateTo] End date filter (valid moment js format).
-   * @apiParam {Object[]} [sort] Sort by conditions (semi-colon separated).
+   * @apiParam {String} [sort] Sort by conditions (semi-colon separated).
    * @apiParamExample {json} Request-Example:
    *     {
    *      "currentPage": 1,
    *      "pageSize": 2,
    *      "dateFrom": "2020-03-30",
    *      "dateTo": "2020-03-31",
-   *      "sort": date_time:asc;id:asc
+   *      "sort": "date_time:asc;id:asc"
    *      }
    *
    * @apiSuccess {Object[]} logs List of activities.

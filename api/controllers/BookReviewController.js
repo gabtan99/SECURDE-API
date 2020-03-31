@@ -1,6 +1,8 @@
+const { calculateLimitAndOffset, paginate } = require('paginate-info');
 const BookReview = require('../models/BookReview');
 const Book = require('../models/Book');
 const User = require('../models/User');
+const { orderBy, between } = require('../services/query.service');
 const logAction = require('../services/logger.service');
 
 const LOG_TYPE = 'BOOK REVIEW';
@@ -74,24 +76,41 @@ const BookReviewController = () => {
    * @apiName reviewHistory
    * @apiGroup Book Review
    *
+   * @apiParam {Number} [currentPage] Desired Page.
+   * @apiParam {Number} [pageSize] Number of elements per page.
+   * @apiParam {String} [sort] Sort by conditions (semi-colon separated).
+   * @apiParamExample Request-Example:
+   *     {
+   *      "currentPage": 1,
+   *      "pageSize": 2,
+   *      "sort": "id:asc"
+   *      }
+   *
    * @apiSuccess {Object} List of all user reviews.
+   * @apiSuccess {Object} meta Metadata for pagination.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "reviews": "[]"
+   *       "reviews": [],
+   *        "meta": {}
    *     }
    *
    *
    */
   const getUserReviews = async (req, res) => {
+    const { currentPage, pageSize = 10, sort } = req.query;
+    const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
     const { id_number } = req.token;
+    let options = { where: { user_id: id_number }, order: [] };
+
+    if (sort) options.order = orderBy(sort);
 
     try {
-      const reviews = await BookReview.findAll({
-        where: {
-          user_id: id_number,
-        },
+      const { rows, count } = await BookReview.findAndCountAll({
+        limit,
+        offset,
+        ...options,
         attributes: ['id', 'review'],
         include: [
           {
@@ -101,7 +120,9 @@ const BookReviewController = () => {
         ],
       });
 
-      return res.status(200).json({ reviews });
+      const meta = paginate(currentPage, count, rows, pageSize);
+
+      return res.status(200).json({ reviews: rows, meta });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.name });

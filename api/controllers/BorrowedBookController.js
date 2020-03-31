@@ -1,6 +1,9 @@
+const { calculateLimitAndOffset, paginate } = require('paginate-info');
+const moment = require('moment');
 const BorrowedBook = require('../models/BorrowedBook');
 const BookInstance = require('../models/BookInstance');
 const Book = require('../models/Book');
+const { orderBy, between } = require('../services/query.service');
 const logAction = require('../services/logger.service');
 
 const LOG_TYPE = 'BOOK';
@@ -77,24 +80,49 @@ const BorrowedBookController = () => {
    * @apiName borrowHistory
    * @apiGroup Book
    *
+   * @apiParam {Number} [currentPage] Desired Page.
+   * @apiParam {Number} [pageSize] Number of elements per page.
+   * @apiParam {String} [dateFrom] Start borrow date filter (valid moment js format).
+   * @apiParam {String} [dateTo] End borrow date filter (valid moment js format).
+   * @apiParam {String} [sort] Sort by conditions (semi-colon separated).
+   * @apiParamExample   Request-Example:
+   *     {
+   *      "currentPage": 1,
+   *      "pageSize": 2,
+   *      "dateFrom": "2020-03-30",
+   *      "dateTo": "2020-03-31",
+   *      "sort": "id:asc"
+   *      }
+   *
    * @apiSuccess {Object} List of user borrow history.
+   * @apiSuccess {Object} meta Metadata for pagination.
+   *
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "history": "[]"
+   *       "history": "[]",
+   *       "meta": {}
    *     }
    *
    *
    */
   const getUserBorrowHistory = async (req, res) => {
+    const { currentPage, pageSize = 10, dateFrom, dateTo, sort } = req.query;
+    const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
     const { id_number } = req.token;
+    let options = { where: { user_id: id_number }, order: [] };
+
+    if (dateFrom && dateTo)
+      options.where.borrow_date = between(moment().format(dateFrom), moment().format(dateTo));
+
+    if (sort) options.order = orderBy(sort);
 
     try {
-      const history = await BorrowedBook.findAll({
-        where: {
-          user_id: id_number,
-        },
+      const { rows, count } = await BorrowedBook.findAndCountAll({
+        limit,
+        offset,
+        ...options,
         attributes: ['id', 'borrow_date', 'return_date'],
         include: [
           {
@@ -110,7 +138,9 @@ const BorrowedBookController = () => {
         ],
       });
 
-      return res.status(200).json({ history });
+      const meta = paginate(currentPage, count, rows, pageSize);
+
+      return res.status(200).json({ history: rows, meta });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.name });

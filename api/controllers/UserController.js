@@ -1,4 +1,6 @@
+const { calculateLimitAndOffset, paginate } = require('paginate-info');
 const User = require('../models/User');
+const { orderBy, between } = require('../services/query.service');
 const logAction = require('../services/logger.service');
 const bcryptService = require('../services/bcrypt.service');
 const authService = require('../services/auth.service');
@@ -154,26 +156,47 @@ const UserController = () => {
    * @apiGroup User
    *
    * @apiParam {String} [role] Access type of user.
+   * @apiParam {Number} [currentPage] Desired Page.
+   * @apiParam {Number} [pageSize] Number of elements per page.
+   * @apiParam {String} [sort] Sort by conditions (semi-colon separated).
+   * @apiParamExample Request-Example:
+   *     {
+   *      "currentPage": 1,
+   *      "pageSize": 2,
+   *      "sort": "id_number:asc"
+   *      }
    *
    * @apiSuccess {Object} users Array of users.
+   * @apiSuccess {Object} meta Metadata for pagination.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "users": []
+   *       "users": [],
+   *       "meta": {}
    *     }
    *
    */
   const getUsers = async (req, res) => {
     const { role } = req.params;
-    const conditions = role ? { access: role.toUpperCase() } : {};
+    const { currentPage, pageSize = 10, sort } = req.query;
+    const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
+    let options = { where: {}, order: [] };
+
+    if (sort) options.order = orderBy(sort);
+
+    if (role) options.where.access = role.toUpperCase();
 
     try {
-      const users = await User.findAll({
-        where: conditions,
+      const { rows, count } = await User.findAndCountAll({
+        limit,
+        offset,
+        ...options,
       });
 
-      return res.status(200).json({ users });
+      const meta = paginate(currentPage, count, rows, pageSize);
+
+      return res.status(200).json({ users: rows, meta });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: 'Internal server error' });

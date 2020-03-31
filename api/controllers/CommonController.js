@@ -35,7 +35,7 @@ const CommonController = () => {
    * @apiParam {String} [dateFrom] Start date filter (valid moment js format).
    * @apiParam {String} [dateTo] End date filter (valid moment js format).
    * @apiParam {String} [sort] Sort by conditions (semi-colon separated).
-   * @apiParamExample {json} Request-Example:
+   * @apiParamExample Request-Example:
    *     {
    *      "currentPage": 1,
    *      "pageSize": 2,

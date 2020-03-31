@@ -1,11 +1,12 @@
+const { calculateLimitAndOffset, paginate } = require('paginate-info');
 const Book = require('../models/Book');
 const BookInstance = require('../models/BookInstance');
 const BookReview = require('../models/BookReview');
 const User = require('../models/User');
 const logAction = require('../services/logger.service');
-const { Op, literal } = require('sequelize');
+const { orderBy, search } = require('../services/query.service');
+const { Op } = require('sequelize');
 
-const BOOKS_PER_PAGE = 10;
 const LOG_TYPE = 'BOOK';
 
 const BookController = () => {
@@ -15,46 +16,55 @@ const BookController = () => {
    * @apiGroup Book
    *
    * @apiParam {String} [keyword] Search keyword.
-   * @apiParam {Number} [page] Get results in certain page.
+   * @apiParam {Number} [currentPage] Desired Page.
+   * @apiParam {Number} [pageSize] Number of elements per page.
+   * @apiParam {String} [sort] Sort by conditions (semi-colon separated).
    *
-   * @apiSuccess {Object[]} data Array of books .
+   * @apiParamExample {json} Request-Example:
+   *     {
+   *      "currentPage": 1,
+   *      "pageSize": 2,
+   *      "sort": title:desc;id:desc
+   *      }
+   *
+   * @apiSuccess {Object[]} books Array of books .
    * @apiSuccess {Object} meta Result Metadata.
    *
    * @apiSuccessExample Success-Response:
    *     HTTP/1.1 200 OK
    *     {
-   *       "data": "[{}, {}, ...]",
+   *       "books": "[]",
    *       "meta": "{}"
    *     }
    *
    */
 
   const getBooks = async (req, res) => {
-    const { page, keyword = '' } = req.body;
-    const limit = page ? BOOKS_PER_PAGE : null;
-    const offset = (page - 1) * limit || 0;
+    const { currentPage, pageSize = 10, keyword, sort } = req.query;
+    const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
+    let options = { where: {}, order: [] };
 
-    try {
-      const results = await Book.findAndCountAll({
-        where: {
-          title: { [Op.iLike]: `%${keyword}%` },
-        },
-        order: literal('id DESC'),
-        limit,
-        offset,
-      });
+    if (sort) options.order = orderBy(sort);
 
-      const meta = {
-        pagination: {
-          offset,
-          limit,
-          current_page: page,
-          page_count: Math.ceil(results.count / limit),
-          total_count: results.count,
+    if (keyword) {
+      options.where = {
+        [Op.or]: {
+          title: search(keyword),
+          authors: search(keyword),
         },
       };
+    }
 
-      return res.status(200).json({ data: results.rows, meta });
+    try {
+      const { rows, count } = await Book.findAndCountAll({
+        limit,
+        offset,
+        ...options,
+      });
+
+      const meta = paginate(currentPage, count, rows, pageSize);
+
+      return res.status(200).json({ books: rows, meta });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.name });

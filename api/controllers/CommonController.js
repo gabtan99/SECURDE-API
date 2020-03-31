@@ -1,7 +1,7 @@
 const { calculateLimitAndOffset, paginate } = require('paginate-info');
-const { Op } = require('sequelize');
 const moment = require('moment');
 const authService = require('../services/auth.service');
+const { orderBy, between } = require('../services/query.service');
 const Log = require('../models/Log');
 const User = require('../models/User');
 
@@ -34,14 +34,14 @@ const CommonController = () => {
    * @apiParam {Number} [pageSize] Number of elements per page.
    * @apiParam {String} [dateFrom] Start date filter (valid moment js format).
    * @apiParam {String} [dateTo] End date filter (valid moment js format).
-   * @apiParam {Object[]} [order] Order by conditions.
+   * @apiParam {Object[]} [sort] Sort by conditions (semi-colon separated).
    * @apiParamExample {json} Request-Example:
    *     {
    *      "currentPage": 1,
    *      "pageSize": 2,
    *      "dateFrom": "2020-03-30",
    *      "dateTo": "2020-03-31",
-   *      "order": [["date_time", "DESC"]]
+   *      "sort": date_time:asc;id:asc
    *      }
    *
    * @apiSuccess {Object[]} logs List of activities.
@@ -57,15 +57,14 @@ const CommonController = () => {
    *
    */
   const getActivityLogs = async (req, res) => {
-    const { currentPage, pageSize = 10, dateFrom, dateTo, order } = req.query;
+    const { currentPage, pageSize = 10, dateFrom, dateTo, sort } = req.query;
     const { limit, offset } = calculateLimitAndOffset(currentPage, pageSize);
     let options = { where: {}, order: [] };
 
     if (dateFrom && dateTo)
-      options.where.date_time = {
-        [Op.between]: [moment().format(dateFrom), moment().format(dateTo)],
-      };
-    if (order) options.order = order;
+      options.where.date_time = between(moment().format(dateFrom), moment().format(dateTo));
+
+    if (sort) options.order = orderBy(sort);
 
     try {
       const { rows, count } = await Log.findAndCountAll({

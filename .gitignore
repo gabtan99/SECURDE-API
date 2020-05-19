@@ -67,4 +67,4 @@ typings/
 db/database.sqlite
 
 # documentation
-documentation/
+api/
